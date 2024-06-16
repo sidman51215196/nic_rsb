@@ -1,0 +1,42 @@
+.about-container {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center items horizontally */
+        padding: 20px;
+        background-image: url('/assets/bg2.jpeg');
+        background-size: cover; /* Make sure the image covers the entire container */
+        background-position: center; /* Center the background image */
+        background-repeat: no-repeat; /* Prevent the image from repeating */
+        min-height: 100vh; /* Ensure the container takes at least the full viewport height */
+        box-sizing: border-box;
+
+}
+
+.centered-text {
+        width: 100%;
+        max-width: 1000px; 
+        margin: 20px 0; /* Space between sections */
+        padding: 20px; /* Add padding */
+        border-radius: 8px; /* Add rounded corners */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow */
+        background: rgba(0, 0, 0, 0.714); /* Dark semi-transparent background */
+        color: #f8f9fa; /* White text color */
+
+}
+
+.centered-text h1 {
+        margin-bottom: 10px; /* Space below the heading */
+        color: #f8f9fa; /* Ensure heading is white */
+        text-align: center;
+}
+
+.centered-text p {
+        text-align: center;
+        margin-bottom: 10px; /* Space below the paragraph */
+        color: #f8f9fa; /* Ensure paragraph text is white */
+}
+
+.inside-content{
+        text-align: justify;
+        padding: 20px;
+}

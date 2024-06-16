@@ -1,0 +1,24 @@
+/* src/app/footer/footer.component.css */
+footer {
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(200, 199, 199);
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  clear: both; /* Clear floats */
+}
+
+footer a {
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Ensure the text color matches */
+}
+
+footer a:hover {
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: rgb(18, 6, 241);
+  transition: 0.2s ease-in-out;
+}
+
+
+      

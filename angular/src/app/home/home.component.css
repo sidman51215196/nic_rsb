@@ -1,0 +1,28 @@
+/* src/app/home/home.component.css */
+.home-container {
+  position: relative;
+  height: 100vh;
+  
+  background-image: url('/assets/background.jpeg'); 
+  background-size: 110%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+      
+.centered-text {
+  max-width: 1200px;
+  background: rgba(0, 0, 0, 0.679); /* added a semi-transparent background for better text visibility */
+  padding: 80px;
+  border-radius: 10px;
+}
+
+.inside-content{
+  text-align: justify;
+}

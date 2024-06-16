@@ -1,0 +1,16 @@
+.app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Ensure app container stretches to at least viewport height */
+}
+
+main {
+        flex: 1; /* Take remaining space */
+        /* padding: 0px; Example padding for main content */
+}
+
+footer {
+        padding: 10px;
+        background-color: rgb(200, 199, 199);
+        /* Add other styles as needed */
+}
