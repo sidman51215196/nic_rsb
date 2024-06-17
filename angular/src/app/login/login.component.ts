@@ -45,9 +45,17 @@ export class LoginComponent {
       const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
       this.http.post(url, body, { headers }).subscribe(
-        response => {
+        (response: any) => {
           console.log('Login successful', response);
-          
+
+          const authenticatedUser = response.authenticatedUser;
+          if (authenticatedUser) {
+            const role = authenticatedUser.role;
+            const district = authenticatedUser.district;
+
+            console.log('User role:', role);
+            console.log('User district:', district);
+          }
         
 
           //console.log('User role:', response.authenticatedUser.role);
