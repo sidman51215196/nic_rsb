@@ -51,4 +51,10 @@
                 height: auto; /* Allow height to adjust based on content */
                 max-width: 90%; /* Limit the width to 90% of the viewport width */
         }
+        
+}
+@media (max-width: 480px) {
+        .login-container {
+          padding: 10px; /* Further adjust padding for smaller screens */
+        }
 }
