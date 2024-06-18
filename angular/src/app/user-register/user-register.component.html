@@ -1,0 +1,117 @@
+<!-- user-register.component.html -->
+<div class="card">
+        <h2>User Registration</h2>
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input id="firstName" type="text" formControlName="firstName" />
+            <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+              <small *ngIf="userForm.get('firstName')?.errors?.['required']">First Name is required</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input id="middleName" type="text" formControlName="middleName" />
+          </div>
+      
+          <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input id="lastName" type="text" formControlName="lastName" />
+            <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+              <small *ngIf="userForm.get('lastName')?.errors?.['required']">Last Name is required</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="commission">Commission *</label>
+            <select id="commission" formControlName="commission">
+              <option *ngFor="let commission of commissions" [value]="commission">{{ commission }}</option>
+            </select>
+            <div *ngIf="userForm.get('commission')?.invalid && userForm.get('commission')?.touched">
+              <small *ngIf="userForm.get('commission')?.errors?.['required']">Commission is required</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="corps">Corps *</label>
+            <select id="corps" formControlName="corps" (change)="onCorpsChange()">
+              <option *ngFor="let corps of corpsOptions" [value]="corps">{{ corps }}</option>
+            </select>
+            <div *ngIf="userForm.get('corps')?.invalid && userForm.get('corps')?.touched">
+              <small *ngIf="userForm.get('corps')?.errors?.['required']">Corps is required</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="rank">Rank *</label>
+            <select id="rank" formControlName="rank">
+              <option *ngFor="let rank of ranksByCorps[userForm.get('corps')?.value]" [value]="rank">{{ rank }}</option>
+            </select>
+            <div *ngIf="userForm.get('rank')?.invalid && userForm.get('rank')?.touched">
+              <small *ngIf="userForm.get('rank')?.errors?.['required']">Rank is required</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <input id="unit" type="text" formControlName="unit" />
+            <div *ngIf="userForm.get('unit')?.invalid && userForm.get('unit')?.touched">
+              <small *ngIf="userForm.get('unit')?.errors?.['pattern']">Invalid unit format</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="uniqueId">Unique ID</label>
+            <input id="uniqueId" type="text" formControlName="uniqueId" />
+            <div *ngIf="userForm.get('uniqueId')?.invalid && userForm.get('uniqueId')?.touched">
+              <small *ngIf="userForm.get('uniqueId')?.errors?.['pattern']">Unique ID can only contain letters and numbers</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="contactNumber">Contact Number</label>
+            <input id="contactNumber" type="text" formControlName="contactNumber" />
+            <div *ngIf="userForm.get('contactNumber')?.invalid && userForm.get('contactNumber')?.touched">
+              <small *ngIf="userForm.get('contactNumber')?.errors?.['pattern']">Invalid contact number</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="dateOfBirth">Date of Birth (DD/MM/YYYY)</label>
+            <input id="dateOfBirth" type="text" formControlName="dateOfBirth" />
+            <div *ngIf="userForm.get('dateOfBirth')?.invalid && userForm.get('dateOfBirth')?.touched">
+              <small *ngIf="userForm.get('dateOfBirth')?.errors?.['pattern']">Invalid date format</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="dateOfEnrollment">Date of Enrollment (DD/MM/YYYY)</label>
+            <input id="dateOfEnrollment" type="text" formControlName="dateOfEnrollment" />
+            <div *ngIf="userForm.get('dateOfEnrollment')?.invalid && userForm.get('dateOfEnrollment')?.touched">
+              <small *ngIf="userForm.get('dateOfEnrollment')?.errors?.['pattern']">Invalid date format</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="dateOfRetirement">Date of Retirement (DD/MM/YYYY)</label>
+            <input id="dateOfRetirement" type="text" formControlName="dateOfRetirement" />
+            <div *ngIf="userForm.get('dateOfRetirement')?.invalid && userForm.get('dateOfRetirement')?.touched">
+              <small *ngIf="userForm.get('dateOfRetirement')?.errors?.['pattern']">Invalid date format</small>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label for="aliveStatus">Alive/Dead</label>
+            <select id="aliveStatus" formControlName="aliveStatus">
+              <option value="Alive">Alive</option>
+              <option value="Dead">Dead</option>
+            </select>
+            <div *ngIf="userForm.get('aliveStatus')?.invalid && userForm.get('aliveStatus')?.touched">
+              <small *ngIf="userForm.get('aliveStatus')?.errors?.['required']">Alive/Dead status is required</small>
+            </div>
+          </div>
+      
+          <button type="submit" [disabled]="userForm.invalid">Submit</button>
+        </form>
+      </div>

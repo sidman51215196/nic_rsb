@@ -1,35 +1,43 @@
+/* src/app/header/header.component.css */
 header {
-  padding: 10px;
-  background: rgb(200, 199, 199);
-  /* position: fixed; */
-  /* z-index: 1000;
-  width: 100%; */
+  padding: 5px;
+  background: rgba(199, 200, 200, 0.1); /* Set a slightly transparent background */
+  position: fixed; /* Fix the header at the top */
+  width: 100%;
+  z-index: 1000;
+  backdrop-filter: blur(10px); /* Optional: add blur effect for better text readability */
 }
+
 .logo {
   width: 100px;
 }
+
 .logo:hover {
   cursor: pointer;
 }
+
 .desktop_menu {
   margin-top: 24px;
 }
+
 .desktop_menu ul {
-  
   padding: 0;
   margin: 0;
 }
+
 .desktop_menu ul li {
   list-style-type: none;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255); /* Change to white for readability */
   display: inline-block;
   font-size: 18px;
   margin-left: 26px;
 }
+
 .desktop_menu ul li a {
   text-decoration: none; /* Remove underline from links */
-  color: rgb(0, 0, 0); /* Set link color */
+  color: rgba(0, 0, 0, 0.997); /* Set link color to white for readability */
 }
+
 .desktop_menu ul li a:hover {
   font-size: 19px;
   font-weight: bold;
@@ -37,6 +45,7 @@ header {
   color: rgb(18, 6, 241);
   transition: 0.2s ease-in-out;
 }
+
 .menu-icon {
   display: none;
 }
@@ -47,11 +56,12 @@ header {
     right: -280px;
     transition: 0.4s ease-in-out;
     top: 64px;
-    background: rgb(123, 123, 123);
+    background: rgba(123, 123, 123, 0.8); /* Slightly transparent background */
     width: 280px;
     height: 100%;
     z-index: 1000;
   }
+
   .desktop_menu ul li {
     display: block;
     text-align: left;
@@ -59,6 +69,7 @@ header {
     padding: 10px 0 10px 26px;
     border-bottom: 1px solid grey;
   }
+
   .menu-icon {
     display: block;
     color: white;
@@ -66,6 +77,7 @@ header {
     padding-top: 10px;
     z-index: 1001;
   }
+
   .mobile_menu {
     right: 0;
     transition: 0.4s ease-in-out;

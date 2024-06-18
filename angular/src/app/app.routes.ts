@@ -7,7 +7,7 @@ import { RegisterComponent } from './register/register.component';
 import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-dashboard.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
-
+import { UserRegisterComponent } from './user-register/user-register.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
@@ -15,17 +15,8 @@ export const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  {
-    path: 'superadmin-dashboard',
-    component: SuperadminDashboardComponent,
-    canActivate: [AuthGuard],
-    data: { role: 'superadmin' }
-  },
-  {
-    path: 'admin-dashboard',
-    component: AdminDashboardComponent,
-    canActivate: [AuthGuard],
-    data: { role: 'admin' }
-  },
-  { path: '**', redirectTo: '' }
+  { path: 'superadmin-dashboard', component: SuperadminDashboardComponent },
+  { path: 'admin-dashboard', component: AdminDashboardComponent},
+  { path: 'user-register', component: UserRegisterComponent},
+
 ];

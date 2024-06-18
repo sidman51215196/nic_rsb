@@ -1,5 +1,9 @@
-<div class="admin-dashboard">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome to the admin dashboard!</p>
+<!-- admin-dashboard.component.html -->
+<div class="header">
+        <button (click)="navigateTo('/user-register')">User Register</button>
+        <button (click)="navigateTo('/update-profile')">Update Profile</button>
+        <button (click)="navigateTo('/delete-profile')">Delete Profile</button>
 </div>
-      
+<div class="content">
+<!-- <router-outlet></router-outlet> -->
+</div>
