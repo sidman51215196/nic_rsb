@@ -12,4 +12,4 @@ Step 3: Install npm dependencies before running
 Step 4: Run the server
   > npm serve
 
-Dont Commit changes in main branch, create a different branch and commit changes into that branch. You can also fork the repo.
+If its not Working, uninstall npm and reinstall it.
