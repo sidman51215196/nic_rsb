@@ -1,0 +1,25 @@
+<header>
+        <app-header></app-header>
+</header>
+
+<div class="dashboard-container">
+        <div class="sidebar" [class.collapsed]="isCollapsed">
+          <button (click)="toggleSidebar()">
+            <span *ngIf="isCollapsed">&#8801;</span> <!-- Three horizontal lines -->
+            <span *ngIf="!isCollapsed">&#9664;</span> <!-- Left arrow -->
+          </button>
+          <nav *ngIf="!isCollapsed">
+            <ul>
+              <li><a routerLink="/home">Home</a></li>
+              <li><a routerLink="/about">About</a></li>
+              <li><a routerLink="/contact">Contact</a></li>
+              <li><a routerLink="/register">Register</a></li>
+              <!-- Add more links as needed -->
+            </ul>
+          </nav>
+        </div>
+        <div class="main-content">
+          
+        </div>
+</div>
+      

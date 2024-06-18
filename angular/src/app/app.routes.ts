@@ -8,6 +8,7 @@ import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { UserRegisterComponent } from './user-register/user-register.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
@@ -18,5 +19,5 @@ export const routes: Routes = [
   { path: 'superadmin-dashboard', component: SuperadminDashboardComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent},
   { path: 'user-register', component: UserRegisterComponent},
-
+  { path: 'dashboard', component: DashboardComponent },
 ];

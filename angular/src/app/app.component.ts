@@ -8,6 +8,7 @@ import { ContactComponent } from './contact/contact.component';
 import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-dashboard.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { UserRegisterComponent } from './user-register/user-register.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -20,6 +21,7 @@ import { UserRegisterComponent } from './user-register/user-register.component';
             SuperadminDashboardComponent,
             AdminDashboardComponent,
             UserRegisterComponent,
+            DashboardComponent,
           ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

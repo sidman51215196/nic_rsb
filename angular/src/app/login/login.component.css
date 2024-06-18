@@ -3,7 +3,7 @@
         display: flex;
         justify-content: flex-end; /* Align items to the right */
         align-items: center; /* Center items vertically */
-        height: 80vh; /* Full viewport height */
+        height: 100vh; /* Full viewport height */
         background-image: url('/assets/flagbg.jpg'); /* Replace with your background image URL */
         background-size: cover; /* Ensure the image covers the entire container */
         background-position: center; /* Center the background image */

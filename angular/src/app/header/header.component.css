@@ -1,11 +1,11 @@
 /* src/app/header/header.component.css */
 header {
   padding: 5px;
-  background: rgba(199, 200, 200, 0.1); /* Set a slightly transparent background */
+  background: rgba(255, 255, 255, 0.1); /* Transparent background */
   position: fixed; /* Fix the header at the top */
   width: 100%;
   z-index: 1000;
-  backdrop-filter: blur(10px); /* Optional: add blur effect for better text readability */
+  backdrop-filter: blur(20px); /* Optional: add blur effect for better text readability */
 }
 
 .logo {
@@ -27,7 +27,7 @@ header {
 
 .desktop_menu ul li {
   list-style-type: none;
-  color: rgb(255, 255, 255); /* Change to white for readability */
+  color: white; /* Change to white for readability */
   display: inline-block;
   font-size: 18px;
   margin-left: 26px;
@@ -35,7 +35,7 @@ header {
 
 .desktop_menu ul li a {
   text-decoration: none; /* Remove underline from links */
-  color: rgba(0, 0, 0, 0.997); /* Set link color to white for readability */
+  color: rgb(0, 0, 0); /* Set link color to white for readability */
 }
 
 .desktop_menu ul li a:hover {
@@ -56,10 +56,14 @@ header {
     right: -280px;
     transition: 0.4s ease-in-out;
     top: 64px;
-    background: rgba(123, 123, 123, 0.8); /* Slightly transparent background */
+    background: rgb(241, 240, 240); /* Light blue semi-transparent background */
     width: 280px;
-    height: 100%;
+    height: -400px;
     z-index: 1000;
+  }
+
+  .desktop_menu.open {
+    background: lightblue; /* Light blue background when menu is open */
   }
 
   .desktop_menu ul li {
@@ -72,7 +76,7 @@ header {
 
   .menu-icon {
     display: block;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 40px;
     padding-top: 10px;
     z-index: 1001;
