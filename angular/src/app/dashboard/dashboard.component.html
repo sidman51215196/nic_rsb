@@ -1,25 +1,30 @@
-<header>
-        <app-header></app-header>
-</header>
+<!-- src/app/app.component.html -->
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <!-- Button to toggle the sidenav -->
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <h1>Welcome, {{ username }}</h1>
+  </mat-toolbar-row>
+</mat-toolbar>
 
-<div class="dashboard-container">
-        <div class="sidebar" [class.collapsed]="isCollapsed">
-          <button (click)="toggleSidebar()">
-            <span *ngIf="isCollapsed">&#8801;</span> <!-- Three horizontal lines -->
-            <span *ngIf="!isCollapsed">&#9664;</span> <!-- Left arrow -->
-          </button>
-          <nav *ngIf="!isCollapsed">
-            <ul>
-              <li><a routerLink="/home">Home</a></li>
-              <li><a routerLink="/about">About</a></li>
-              <li><a routerLink="/contact">Contact</a></li>
-              <li><a routerLink="/register">aaaaa</a></li>
-              <!-- Add more links as needed -->
-            </ul>
-          </nav>
-        </div>
-        <div class="main-content">
-          
-        </div>
-</div>
-      
+<mat-sidenav-container>
+  <!-- Sidenav definition with a template reference variable 'sidenav' -->
+  <mat-sidenav #sidenav opened="true" mode="side">
+    <mat-nav-list>
+      <!-- Navigation items inside the sidenav with href attributes -->
+      <a mat-list-item href="/home">Home</a>
+      <a mat-list-item href="/about">About</a>
+      <a *ngIf="userRole === 2" mat-list-item>userrole2</a>
+      <a *ngIf="userRole === 1" mat-list-item href="/register">Register</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main content area when the sidenav is present -->
+  <mat-sidenav-content>
+    <div style="height:50vh">
+      <p>main content</p>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
