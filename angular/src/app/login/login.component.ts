@@ -88,7 +88,7 @@ export class LoginComponent {
           //console.log('User role:', response.authenticatedUser.role);
            
           // Navigate to a different page on successful login
-          //  this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
         },
         error => {
           console.error('Login failed', error);
