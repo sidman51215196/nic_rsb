@@ -6,6 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { ContactComponent } from './contact/contact.component';
 import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-dashboard.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -16,6 +17,8 @@ import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-
             FooterComponent,
             ContactComponent,
             SuperadminDashboardComponent,
+            DashboardComponent,
+            
           ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
