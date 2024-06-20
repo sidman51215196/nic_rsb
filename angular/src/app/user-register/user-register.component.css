@@ -1,10 +1,13 @@
+.full-screen{
+  overflow: hidden; 
+  height: 100vh; /* Use full viewport height */
+}
 .card-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200vh; /* Use full viewport height */
+  height: 106vh; /* Use full viewport height */
   padding: 20px;
-  overflow-y: auto; /* Enable vertical scrolling if content exceeds viewport */
 }
 
 mat-card {
@@ -32,11 +35,6 @@ form {
   width: 100%; /* Ensure form fields take full width */
 }
 
-.mat-form-field {
-  width: 100vh; /* Ensure the mat-form-field takes the full width */
-  max-width: 600px; /* Adjust max-width of mat-form-field */
-}
-
 .mat-select {
   width: 100%; /* Ensure the mat-select takes the full width */
 }
@@ -51,10 +49,7 @@ input.mat-input-element {
   max-width: 60px; /* Adjust max-width of input fields */
 }
 
-.divider {
-  width: 100%;
-  height: 5px; /* Adjust height as needed */
-}
+
 .centered-subtitle {
   text-align: center;
   display: block; /* Ensures it takes up the full width */
@@ -62,11 +57,48 @@ input.mat-input-element {
   font-size:larger;
 }
 
-.responsive-form-field {
+::ng-deep mat-card-title {
+  background-color: rgb(0, 138, 184);
+  color: white;
+  padding: 10px; /* Optional: to add some padding around the text */
+  width: 100%;
+}
+
+.name{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.progress{
+  margin-top: 20px;
+  margin-bottom: -70px;
+}
+
+.space{
+  padding: 5px;
+}
+
+.address {
+  width: 100%;
+}
+
+::ng-deep .blue-button {
+  background-color: rgb(0, 138, 184) !important;
+  color: white !important; /* Ensures the text is readable against the blue background */
+}
+::ng-deep .blue-button:hover {
+  background-color: darkblue !important; /* Optional: A darker blue for the hover state */
+}
+
+/* .name-form-field {
+  width: 500px;
+} */
+/* .responsive-form-field {
   width: 500px;
 }
 @media (max-width: 768px) {
   .responsive-form-field {
-      width: 100%; /* Adjust the width to fit the screen */
+      width: 100%; 
   }
-}
+} */
