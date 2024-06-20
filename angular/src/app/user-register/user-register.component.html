@@ -1,117 +1,230 @@
-<!-- user-register.component.html -->
-<div class="card">
-        <h2>User Registration</h2>
-        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="firstName">First Name *</label>
-            <input id="firstName" type="text" formControlName="firstName" />
-            <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
-              <small *ngIf="userForm.get('firstName')?.errors?.['required']">First Name is required</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="middleName">Middle Name</label>
-            <input id="middleName" type="text" formControlName="middleName" />
-          </div>
-      
-          <div class="form-group">
-            <label for="lastName">Last Name *</label>
-            <input id="lastName" type="text" formControlName="lastName" />
-            <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
-              <small *ngIf="userForm.get('lastName')?.errors?.['required']">Last Name is required</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="commission">Commission *</label>
-            <select id="commission" formControlName="commission">
-              <option *ngFor="let commission of commissions" [value]="commission">{{ commission }}</option>
-            </select>
-            <div *ngIf="userForm.get('commission')?.invalid && userForm.get('commission')?.touched">
-              <small *ngIf="userForm.get('commission')?.errors?.['required']">Commission is required</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="corps">Corps *</label>
-            <select id="corps" formControlName="corps" (change)="onCorpsChange()">
-              <option *ngFor="let corps of corpsOptions" [value]="corps">{{ corps }}</option>
-            </select>
-            <div *ngIf="userForm.get('corps')?.invalid && userForm.get('corps')?.touched">
-              <small *ngIf="userForm.get('corps')?.errors?.['required']">Corps is required</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="rank">Rank *</label>
-            <select id="rank" formControlName="rank">
-              <option *ngFor="let rank of ranksByCorps[userForm.get('corps')?.value]" [value]="rank">{{ rank }}</option>
-            </select>
-            <div *ngIf="userForm.get('rank')?.invalid && userForm.get('rank')?.touched">
-              <small *ngIf="userForm.get('rank')?.errors?.['required']">Rank is required</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="unit">Unit</label>
-            <input id="unit" type="text" formControlName="unit" />
-            <div *ngIf="userForm.get('unit')?.invalid && userForm.get('unit')?.touched">
-              <small *ngIf="userForm.get('unit')?.errors?.['pattern']">Invalid unit format</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="uniqueId">Unique ID</label>
-            <input id="uniqueId" type="text" formControlName="uniqueId" />
-            <div *ngIf="userForm.get('uniqueId')?.invalid && userForm.get('uniqueId')?.touched">
-              <small *ngIf="userForm.get('uniqueId')?.errors?.['pattern']">Unique ID can only contain letters and numbers</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="contactNumber">Contact Number</label>
-            <input id="contactNumber" type="text" formControlName="contactNumber" />
-            <div *ngIf="userForm.get('contactNumber')?.invalid && userForm.get('contactNumber')?.touched">
-              <small *ngIf="userForm.get('contactNumber')?.errors?.['pattern']">Invalid contact number</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="dateOfBirth">Date of Birth (DD/MM/YYYY)</label>
-            <input id="dateOfBirth" type="text" formControlName="dateOfBirth" />
-            <div *ngIf="userForm.get('dateOfBirth')?.invalid && userForm.get('dateOfBirth')?.touched">
-              <small *ngIf="userForm.get('dateOfBirth')?.errors?.['pattern']">Invalid date format</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="dateOfEnrollment">Date of Enrollment (DD/MM/YYYY)</label>
-            <input id="dateOfEnrollment" type="text" formControlName="dateOfEnrollment" />
-            <div *ngIf="userForm.get('dateOfEnrollment')?.invalid && userForm.get('dateOfEnrollment')?.touched">
-              <small *ngIf="userForm.get('dateOfEnrollment')?.errors?.['pattern']">Invalid date format</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="dateOfRetirement">Date of Retirement (DD/MM/YYYY)</label>
-            <input id="dateOfRetirement" type="text" formControlName="dateOfRetirement" />
-            <div *ngIf="userForm.get('dateOfRetirement')?.invalid && userForm.get('dateOfRetirement')?.touched">
-              <small *ngIf="userForm.get('dateOfRetirement')?.errors?.['pattern']">Invalid date format</small>
-            </div>
-          </div>
-      
-          <div class="form-group">
-            <label for="aliveStatus">Alive/Dead</label>
-            <select id="aliveStatus" formControlName="aliveStatus">
-              <option value="Alive">Alive</option>
-              <option value="Dead">Dead</option>
-            </select>
-            <div *ngIf="userForm.get('aliveStatus')?.invalid && userForm.get('aliveStatus')?.touched">
-              <small *ngIf="userForm.get('aliveStatus')?.errors?.['required']">Alive/Dead status is required</small>
-            </div>
-          </div>
-      
-          <button type="submit" [disabled]="userForm.invalid">Submit</button>
-        </form>
+<div class="card-container">
+  <mat-card *ngIf="currentCard === 1">
+    <mat-card-title >Personal Details</mat-card-title>
+    <div class="divider"></div>
+    <form [formGroup]="personalDetailsForm">
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required>
+          <mat-error *ngIf="personalDetailsForm.get('firstName')?.hasError('required')">
+            First Name is required
+          </mat-error>
+        </mat-form-field>
       </div>
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Middle Name</mat-label>
+          <input matInput formControlName="middleName">
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required>
+          <mat-error *ngIf="personalDetailsForm.get('lastName')?.hasError('required')">
+            Last Name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Unique ID</mat-label>
+          <input matInput formControlName="uniqueId">
+          <mat-error *ngIf="personalDetailsForm.get('uniqueId')?.hasError('required')">
+            Unique ID is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('uniqueId')?.hasError('pattern')">
+            Unique ID Invalid
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Contact Number</mat-label>
+          <input matInput formControlName="contactNumber">
+          <mat-error *ngIf="personalDetailsForm.get('contactNumber')?.hasError('required')">
+            Contact Number is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('contactNumber')?.hasError('pattern')">
+            Invalid Contact Number
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Highest Education</mat-label>
+          <mat-select formControlName="highestEducation" required>
+            <mat-option value="No Formal Education">No Formal Education</mat-option>
+            <mat-option value="Secondary">Secondary</mat-option>
+            <mat-option value="Senior Secondary">Senior Secondary</mat-option>
+            <mat-option value="Diploma">Diploma</mat-option>
+            <mat-option value="Graduate">Graduate</mat-option>
+            <mat-option value="Post-Graduate">Post-Graduate</mat-option>
+            <mat-option value="Doctorate">Doctorate</mat-option>
+          </mat-select>
+          <mat-error *ngIf="personalDetailsForm.get('highestEducation')?.hasError('required')">
+            Highest Education is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>University Name</mat-label>
+          <input matInput formControlName="universityName">
+          <mat-error *ngIf="personalDetailsForm.get('universityName')?.hasError('pattern')">
+            University Name must contain only alphabets
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>ESM Card Number</mat-label>
+          <input matInput formControlName="esmCardNumber">
+          <mat-error *ngIf="personalDetailsForm.get('esmCardNumber')?.hasError('pattern')">
+            ESM Card Number Invalid
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Aadhar Number</mat-label>
+          <input matInput formControlName="aadharNumber" (input)="formatAadharNumber()">
+          <mat-error *ngIf="personalDetailsForm.get('aadharNumber')?.hasError('required')">
+            Aadhar Number is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('aadharNumber')?.hasError('pattern')">
+            Invalid Aadhar Number
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email">
+          <mat-error *ngIf="personalDetailsForm.get('email')?.hasError('required')">
+            Email is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('email')?.hasError('email')">
+            Must be a valid email
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Date of Birth</mat-label>
+          <input matInput formControlName="dateOfBirth">
+          <mat-error *ngIf="personalDetailsForm.get('dateOfBirth')?.hasError('required')">
+            Date of Birth is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('dateOfBirth')?.hasError('pattern')">
+            Must be in DD/MM/YYYY format
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Alive/Expired</mat-label>
+          <mat-select formControlName="aliveStatus">
+            <mat-option value="Alive">Alive</mat-option>
+            <mat-option value="Expired">Expired</mat-option>
+          </mat-select>
+          <mat-error *ngIf="personalDetailsForm.get('aliveStatus')?.hasError('required')">
+            Status is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field" *ngIf="showDateWhenExpired">
+        <mat-form-field class="responsive-form-field">
+          <mat-label>Date When Expired</mat-label>
+          <input matInput formControlName="dateWhenExpired">
+          <mat-error *ngIf="personalDetailsForm.get('dateWhenExpired')?.hasError('required')">
+            Date When Expired is required
+          </mat-error>
+          <mat-error *ngIf="personalDetailsForm.get('dateWhenExpired')?.hasError('pattern')">
+            Must be in DD/MM/YYYY format
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-card-subtitle class="centered-subtitle">Address Details</mat-card-subtitle>
+      <div formGroupName="address">
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>C/O</mat-label>
+            <input matInput formControlName="co">
+          </mat-form-field>
+        </div>
+
+        
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>Village</mat-label>
+            <input matInput formControlName="village">
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>P.O.</mat-label>
+            <input matInput formControlName="po">
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>P.S.</mat-label>
+            <input matInput formControlName="ps">
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>District</mat-label>
+            <mat-select formControlName="district" required>
+              <mat-option value="Gangtok">Gangtok</mat-option>
+              <mat-option value="Gyalshing">Gyalshing</mat-option>
+              <mat-option value="Mangan">Mangan</mat-option>
+              <mat-option value="Namchi">Namchi</mat-option>
+              <mat-option value="Pakyong">Pakyong</mat-option>
+              <mat-option value="Soreng">Soreng</mat-option>
+            </mat-select>
+            <mat-error *ngIf="personalDetailsForm.get('address')?.get('district')?.hasError('required')">
+              District is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field class="responsive-form-field">
+            <mat-label>PIN</mat-label>
+            <input matInput formControlName="pin">
+            <mat-error *ngIf="personalDetailsForm.get('address')?.get('pin')?.hasError('required')">
+              PIN is required
+            </mat-error>
+            <mat-error *ngIf="personalDetailsForm.get('address')?.get('pin')?.hasError('pattern')">
+              PIN must be a valid 6-digit number
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <button mat-button (click)="submitCard(1)">Next</button>
+      </div>
+    </form>
+  </mat-card>
+  
+  <!-- Additional cards for service, bank, family, and additional details go here -->
+</div>

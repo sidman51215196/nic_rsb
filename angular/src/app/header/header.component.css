@@ -9,7 +9,29 @@ header {
 }
 
 .logo {
-  width: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  max-height: 100px; /* Adjust based on your desired logo size */
+}
+
+.logo-text {
+  font-size: 16px; /* Adjust based on your desired text size */
+  margin-left: 10px; /* Adjust based on your desired spacing */
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.align-items-center {
+  align-items: center !important;
+}
+
+.ms-2 {
+  margin-left: 0.5rem !important;
 }
 
 .logo:hover {
@@ -50,6 +72,19 @@ header {
   display: none;
 }
 
+@media screen and (max-width: 900px) {
+  .d-flex.flex-column {
+    flex-direction: column !important; /* Ensure flex-direction is column */
+    align-items: center !important; /* Center align items */
+  }
+
+  .logo-text {
+    text-align: center; /* Center align text */
+    font-size: 14px; /* Adjust font size as needed */
+    margin-top: 5px; /* Optional: Add space between logo and text */
+  }
+}
+
 @media screen and (min-width: 128px) and (max-width: 900px) {
   .desktop_menu {
     position: fixed !important;
@@ -85,5 +120,10 @@ header {
   .mobile_menu {
     right: 0;
     transition: 0.4s ease-in-out;
+  }
+
+  .logo-text {
+    font-size: 15px; /* Adjust the font size as per your requirement */
+    
   }
 }
