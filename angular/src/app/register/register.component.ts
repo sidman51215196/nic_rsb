@@ -1,29 +1,49 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import {NgFor } from '@angular/common';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators ,ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [NgFor,HttpClientModule,ReactiveFormsModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  registerForm: FormGroup;
-  zsbOptions = ['ZSB(Gangtok)', 'ZSB(Namchi)', 'ZSB(Geyzing)'];
+  registrationForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
+  districtChoices = [
+    { value: 1, label: 'Gangtok' },
+    { value: 2, label: 'Gyalshing' },
+    { value: 3, label: 'Namchi' }
+  ];
+
+  constructor(private fb: FormBuilder, private http: HttpClient) {
+    this.registrationForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      zsb: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      district: ['', Validators.required]
     });
   }
 
-  onSubmit() {
-    if (this.registerForm.valid) {
-      console.log(this.registerForm.value);
-    }
-  }
+  onSubmit(){
+      if (this.registrationForm.valid) {
+      const formData = this.registrationForm.value;
+      console.log(formData);
+
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      this.http.post('http://127.0.0.1:8000/register', formData, { headers })
+        .subscribe(
+          response => {
+            console.log('Registration successful', response);
+          },
+          error => {
+            console.error('Registration failed', error);
+          }
+        );
+
+}
+
+}
 }
