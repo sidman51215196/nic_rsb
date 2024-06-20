@@ -6,7 +6,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
 import { LocalStorageService } from '../services/local-storage.service';
 import { NgIf } from '@angular/common';
-
+import {HeaderComponent} from '../header/header.component';
 
 
 @Component({
@@ -18,7 +18,8 @@ import { NgIf } from '@angular/common';
     MatIconModule,
     MatListModule,
     MatButtonModule,
-    NgIf
+    NgIf,
+    HeaderComponent
 
   
   ],

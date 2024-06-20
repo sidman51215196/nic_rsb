@@ -1,9 +1,14 @@
-.example-container {
-  width: auto;
-  height: 200px;
-  margin: 10px;
-  border: 1px solid #555;
-  /* The background property is added to clearly distinguish the borders between drawer and main
-     content */
-  background: #eee;
+.app-header {
+  position: fixed; /* Ensure the header remains fixed at the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Ensure the header is above other content */
+}
+
+.dash-container {
+  margin-top: 120px; /* Adjust margin top to accommodate the header height */
+}
+.sidenav_dash{
+  width:20%;
 }
