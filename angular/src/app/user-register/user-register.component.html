@@ -63,6 +63,15 @@
           Must be a valid email
         </mat-error>
       </mat-form-field>
+      <mat-form-field>
+        <mat-label>district</mat-label>
+      <mat-select formControlName="district" required>
+        <mat-option *ngFor="let district of districtChoices" [value]="district.value">{{ district.label }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="personalDetailsForm.get('district')?.invalid && personalDetailsForm.get('district')?.touched">
+        district is required
+      </mat-error>
+    </mat-form-field>
       <div formGroupName="address" >
         <mat-form-field class="address">
           <mat-label>Address</mat-label>

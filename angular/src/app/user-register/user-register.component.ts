@@ -57,6 +57,12 @@ export class UserRegisterComponent {
     { value: 3, label: 'Indian Air Force Corps' }
   ];
 
+  districtChoices = [
+    { value: 1, label: 'Gangtok' },
+    { value: 2, label: 'Gyalshing' },
+    { value: 3, label: 'Namchi' }
+  ];
+
   accountTypes: string[] = [
     'joint', 'single'
   ];
@@ -73,6 +79,7 @@ export class UserRegisterComponent {
       dateOfBirth: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]],
       aliveStatus: ['', Validators.required],
       dateWhenExpired: [''],
+      district:['',Validators.required],
       address: this.fb.group({
         address: ['']
       })
@@ -126,6 +133,7 @@ onSubmit() {
       middle_name: this.personalDetailsForm.value.middleName,
       last_name: this.personalDetailsForm.value.lastName,
       date_of_birth: this.personalDetailsForm.value.dateOfBirth,
+      district:this.personalDetailsForm.value.district,
       address: this.personalDetailsForm.value.address.address,
       phone_number: this.personalDetailsForm.value.contactNumber,
       email: this.personalDetailsForm.value.email,
