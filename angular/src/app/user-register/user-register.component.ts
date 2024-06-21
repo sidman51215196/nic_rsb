@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-register',
@@ -29,7 +31,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatFormFieldModule,
     CommonModule,
     MatIconModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    HttpClientModule
   ]
 })
 export class UserRegisterComponent {
@@ -37,72 +40,49 @@ export class UserRegisterComponent {
   serviceDetailsForm: FormGroup;
   bankDetailsForm: FormGroup;
   familyDetailsForm: FormGroup;
-  additionalDetailsForm: FormGroup;
-
-  public i: number;
+  additionalDetailsForm: FormGroup; 
   currentCard = 1;
   totalCards = 5;
-  showDateWhenExpired: boolean = false;
+  showDateWhenExpired = false;
 
+  commissionOptions: { value: number, label: string }[] = [
+    { value: 1, label: 'Commissioned Officer (CO)' },
+    { value: 2, label: 'Junior-Commissioned Officer (JCO)' },
+    { value: 3, label: 'Non-Commissioned Officer (NCO)' }
+  ];
   
-  
-  commissionOptions: string[] = [
-    'Commissioned Officer (CO)', 'Junior-Commissioned Officer (JCO)', 'Non-Commissioned Officer (NCO)'
-  ];
-
-  armyRanks: string[] = [
-    'Field Marshal', 'General', 'Lieutenant General', 'Brigadier', 'Colonel', 'Lieutenant Colonel',
-    'Major', 'Captain', 'Lieutenant', 'Subedar Major', 'Subedar', 'Naib Subedar', 'Havildar',
-    'Naik', 'Lance Naik', 'Sepoy'
-  ];
-
-  navyRanks: string[] = [
-    'Admiral of the Fleet', 'Admiral', 'Vice Admiral', 'Captain', 'Commander', 'Lieutenant Commander',
-    'Lieutenant', 'Sub Lieutenant', 'Master Chief Petty Officer 1st Class', 'Master Chief Petty Officer 2nd Class',
-    'Chief Petty Officer', 'Petty Officer', 'Able Seaman', 'Leading Seaman', 'Seaman'
-  ];
-
-  airForceRanks: string[] = [
-    'Marshal of the Indian Air Force', 'Air Chief Marshal', 'Air Marshal', 'Air Vice Marshal', 'Air Commodore',
-    'Group Captain', 'Wing Commander', 'Squadron Leader', 'Flight Lieutenant', 'Flying Officer',
-    'Master Warrant Officer', 'Warrant Officer', 'Junior Warrant Officer', 'Sergeant', 'Corporal',
-    'Leading Aircraftsman', 'Aircraftsman'
+  corpsOptions: { value: number, label: string }[] = [
+    { value: 1, label: 'Indian Army Corps' },
+    { value: 2, label: 'Indian Navy Corps' },
+    { value: 3, label: 'Indian Air Force Corps' }
   ];
 
   accountTypes: string[] = [
-    'Joint', 'Single'
+    'joint', 'single'
   ];
 
-  relationOptions: string[] = [
-    'Daughter', 'Father', 'Mother', 'Son', 'Wife'
-  ];
-
-  constructor(private fb: FormBuilder) {
-    this.i=0;
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.personalDetailsForm = this.fb.group({
       firstName: ['', Validators.required],
       middleName: [''],
       lastName: ['', Validators.required],
       uniqueId: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]],
       contactNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      
       aadharNumber: ['', [Validators.required, Validators.pattern('^[0-9]{4} [0-9]{4} [0-9]{4}$')]],
-      email: ['', [ Validators.email]],
-      dateOfBirth: ['', [Validators.required, Validators.pattern('^\\d{2}/\\d{2}/\\d{4}$')]],
+      email: ['', Validators.email],
+      dateOfBirth: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]],
       aliveStatus: ['', Validators.required],
       dateWhenExpired: [''],
       address: this.fb.group({
-        address:['']
-        
+        address: ['']
       })
     });
 
     this.serviceDetailsForm = this.fb.group({
       commission: ['', Validators.required],
       corps: ['', Validators.required],
-      
-      dateOfEnrollment: ['', [Validators.required, Validators.pattern('^\\d{2}/\\d{2}/\\d{4}$')]],
-      dateOfRetirement: ['', [Validators.required, Validators.pattern('^\\d{2}/\\d{2}/\\d{4}$')]]
+      dateOfEnrollment: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]],
+      dateOfRetirement: ['', [Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]]
     });
 
     this.bankDetailsForm = this.fb.group({
@@ -128,70 +108,95 @@ export class UserRegisterComponent {
       echs: ['', Validators.required],
       coi: ['', Validators.required],
       residentCertificate: ['', Validators.required],
-      serviceCertifications: this.fb.array([]), // FormArray for service certifications
-      civilCertifications: this.fb.array([]),   // FormArray for civil certifications
-      serviceAwards: this.fb.array([]),          // FormArray for service awards
-      civilAwards: this.fb.array([]),            // FormArray for civil awards
+      serviceCertifications: this.fb.array([]),
+      civilCertifications: this.fb.array([]),
+      serviceAwards: this.fb.array([]),
+      civilAwards: this.fb.array([]),
       remarks: ['']
     });
 
     this.onAliveStatusChange();
   }
 
+onSubmit() {
+  if (this.personalDetailsForm.valid && this.serviceDetailsForm.valid && this.bankDetailsForm.valid) {
+    const formData = {
+      Id_ic: this.personalDetailsForm.value.uniqueId,
+      first_name: this.personalDetailsForm.value.firstName,
+      middle_name: this.personalDetailsForm.value.middleName,
+      last_name: this.personalDetailsForm.value.lastName,
+      date_of_birth: this.personalDetailsForm.value.dateOfBirth,
+      address: this.personalDetailsForm.value.address.address,
+      phone_number: this.personalDetailsForm.value.contactNumber,
+      email: this.personalDetailsForm.value.email,
+      aadhar_number: this.personalDetailsForm.value.aadharNumber,
+      is_alive: this.personalDetailsForm.value.aliveStatus === 'Alive',
+      expiry_date: this.personalDetailsForm.value.dateWhenExpired || null,
+      services: [
+        {
+          corps: this.serviceDetailsForm.value.corps,
+          commission: this.serviceDetailsForm.value.commission,
+          description: 'Description of service',  // Replace with actual description if available
+          start_date: this.serviceDetailsForm.value.dateOfEnrollment,
+          end_date: this.serviceDetailsForm.value.dateOfRetirement
+        }
+      ],
+      bankdetails: [
+        {
+          account_number: this.bankDetailsForm.value.accountNumber,
+          pan_number: this.bankDetailsForm.value.panNumber,
+          bank_name: this.bankDetailsForm.value.bankName,
+          ifsc_code: this.bankDetailsForm.value.ifscCode,
+          account_type: this.bankDetailsForm.value.accountType,
+          ppo_number: this.bankDetailsForm.value.ppoNumber
+        }
+      ]
+    };
+
+    const url = 'http://127.0.0.1:8000/sainikregistration';
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    this.http.post(url, formData, { headers })
+      .subscribe(
+        response => {
+          console.log('Registration successful', response);
+          // Optionally, reset the forms after successful submission
+          // this.personalDetailsForm.reset();
+          // this.serviceDetailsForm.reset();
+          // this.bankDetailsForm.reset();
+        },
+        error => {
+          console.error('Registration failed', error);
+          // Handle error scenarios, such as displaying an error message
+        }
+      );
+  } else {
+    console.log('Form is invalid. Cannot submit.');
+  }
+}
+
+  
+
   updateRanks(corps: string) {
     switch (corps) {
-    case 'Indian Army':
-    this.serviceDetailsForm.get('rank')?.setValue(null); // Reset rank when corps changes
-    break;
-    case 'Indian Navy':
-    this.serviceDetailsForm.get('rank')?.setValue(null); // Reset rank when corps changes
-    break;
-    case 'Indian Air Force':
-    this.serviceDetailsForm.get('rank')?.setValue(null); // Reset rank when corps changes
-    break;
-    default:
-    break;
+      case 'Indian Army':
+      case 'Indian Navy':
+      case 'Indian Air Force':
+        this.serviceDetailsForm.get('rank')?.setValue(null);
+        break;
+      default:
+        break;
     }
-    }
+  }
 
   calculateProgress(): number {
     return (this.currentCard - 1) * (100 / this.totalCards);
   }
 
-  createDependentForm(): FormGroup {
-    return this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      relation: ['', Validators.required]
-    });
-  }
-
-  get dependents(): FormArray {
-    return this.familyDetailsForm.get('dependents') as FormArray;
-  }
-
-  // Function to add more dependents
-  addDependent() {
-    const dependentsArray = this.familyDetailsForm.get('dependents') as FormArray;
-    dependentsArray.push(this.createDependentForm());
-  }
-
-  // Function to remove dependent by index
-  removeDependent(index: number) {
-    const dependentsArray = this.familyDetailsForm.get('dependents') as FormArray;
-    dependentsArray.removeAt(index);
-  }
-
-  private dependentsValid(): boolean {
-    const dependentsArray = this.familyDetailsForm.get('dependents') as FormArray;
-    // Check if every dependent has a valid relation
-    return dependentsArray.controls.every(dependent => dependent.get('relation')?.valid);
-  }
-
   formatAadharNumber() {
-    let aadharControl = this.personalDetailsForm.get('aadharNumber');
+    const aadharControl = this.personalDetailsForm.get('aadharNumber');
     if (aadharControl) {
-      let value = aadharControl.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+      const value = aadharControl.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
       aadharControl.setValue(value, { emitEvent: false });
     }
   }
@@ -200,7 +205,7 @@ export class UserRegisterComponent {
     this.personalDetailsForm.get('aliveStatus')?.valueChanges.subscribe(status => {
       if (status === 'Expired') {
         this.showDateWhenExpired = true;
-        this.personalDetailsForm.get('dateWhenExpired')?.setValidators([Validators.required, Validators.pattern('^\\d{2}/\\d{2}/\\d{4}$')]);
+        this.personalDetailsForm.get('dateWhenExpired')?.setValidators([Validators.required, Validators.pattern('^\\d{4}-\\d{2}-\\d{2}$')]);
       } else {
         this.showDateWhenExpired = false;
         this.personalDetailsForm.get('dateWhenExpired')?.clearValidators();
@@ -240,77 +245,25 @@ export class UserRegisterComponent {
     serviceCertificationsArray.removeAt(index);
   }
 
-  addCivilCertification() {
-    const civilCertificationsArray = this.additionalDetailsForm.get('civilCertifications') as FormArray;
-    civilCertificationsArray.push(this.fb.group({
-      name: [''],
-      place: [''],
-      date: ['']
-    }));
-  }
-
-  get civilCertifications(): FormArray {
-    return this.additionalDetailsForm.get('civilCertifications') as FormArray;
-  }
-
-  removeCivilCertification(index: number) {
-    const civilCertificationsArray = this.additionalDetailsForm.get('civilCertifications') as FormArray;
-    civilCertificationsArray.removeAt(index);
-  }
-
-  addServiceAward() {
-    const serviceAwardsArray = this.additionalDetailsForm.get('serviceAwards') as FormArray;
-    serviceAwardsArray.push(this.fb.group({
-      name: [''],
-      date: ['']
-    }));
-  }
-
-  get serviceAwards(): FormArray {
-    return this.additionalDetailsForm.get('serviceAwards') as FormArray;
-  }
-
-  removeServiceAward(index: number) {
-    const serviceAwardsArray = this.additionalDetailsForm.get('serviceAwards') as FormArray;
-    serviceAwardsArray.removeAt(index);
-  }
-
-  addCivilAward() {
-    const civilAwardsArray = this.additionalDetailsForm.get('civilAwards') as FormArray;
-    civilAwardsArray.push(this.fb.group({
-      name: [''],
-      date: ['']
-    }));
-  }
-
-  get civilAwards(): FormArray {
-    return this.additionalDetailsForm.get('civilAwards') as FormArray;
-  }
-
-  removeCivilAward(index: number) {
-    const civilAwardsArray = this.additionalDetailsForm.get('civilAwards') as FormArray;
-    civilAwardsArray.removeAt(index);
-  }
-
   submitCard(cardNumber: number) {
     switch (cardNumber) {
-    case 1:
-    if (this.personalDetailsForm.valid) this.currentCard++;
-    break;
-    case 2:
-    if (this.serviceDetailsForm.valid) this.currentCard++;
-    break;
-    case 3:
-    if (this.bankDetailsForm.valid) this.currentCard++;
-    break;
-    case 4:
-    if (this.familyDetailsForm.valid && this.dependentsValid()) this.currentCard++;
-    break;
-    case 5:
-    if (this.additionalDetailsForm.valid) this.currentCard++;
-    break;
+      case 1:
+        if (this.personalDetailsForm.valid) this.moveToNextCard();
+        break;
+      case 2:
+        if (this.serviceDetailsForm.valid) this.moveToNextCard();
+        break;
+      case 3:
+        if (this.bankDetailsForm.valid) this.moveToNextCard();
+        break;
+      case 4:
+        if (this.familyDetailsForm.valid) this.moveToNextCard();
+        break;
+      case 5:
+        if (this.additionalDetailsForm.valid) this.onSubmit();
+        break;
+      default:
+        break;
     }
   }
-
-
 }
