@@ -4,6 +4,10 @@ import {
   TemplatePortal
 } from "./chunk-UQFVUC2P.js";
 import {
+  MatIcon,
+  MatIconModule
+} from "./chunk-HCZYU5AB.js";
+import {
   animate,
   animateChild,
   group,
@@ -13,12 +17,6 @@ import {
   transition,
   trigger
 } from "./chunk-WXBO6MF6.js";
-import {
-  MatIcon,
-  MatIconModule
-} from "./chunk-3ZBBSA45.js";
-import "./chunk-F5TF76SD.js";
-import "./chunk-R3CKI7MK.js";
 import {
   BidiModule,
   Directionality,
@@ -33,7 +31,9 @@ import {
   SPACE,
   _getFocusedElementPierceShadowDom,
   hasModifierKey
-} from "./chunk-ISNYPBC4.js";
+} from "./chunk-DU3COODQ.js";
+import "./chunk-F5TF76SD.js";
+import "./chunk-R3CKI7MK.js";
 import {
   CommonModule,
   NgTemplateOutlet

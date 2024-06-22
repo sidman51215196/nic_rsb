@@ -12,6 +12,12 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpClientModule } from '@angular/common/http';
+import { Header3Component } from '../header3/header.component';
+import { MatStepper } from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
+
 
 @Component({
   selector: 'app-user-register',
@@ -22,9 +28,13 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     FormsModule,
     MatCardModule,
+    MatStepperModule,
+    MatTableModule,
+    MatStepper,
     MatInputModule,
     MatButtonModule,
     MatCardTitle,
+    Header3Component,
     MatCardSubtitle,
     NgIf,
     MatSelectModule,
@@ -66,6 +76,10 @@ export class UserRegisterComponent {
   accountTypes: string[] = [
     'joint', 'single'
   ];
+
+  dataSource!: MatTableDataSource<any>;
+  columnsToDisplay = ['field', 'value', 'edit'];
+  stepper: any;
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.personalDetailsForm = this.fb.group({
@@ -125,7 +139,73 @@ export class UserRegisterComponent {
     this.onAliveStatusChange();
   }
 
+  ngOnInit(): void {
+    this.dataSource = new MatTableDataSource(this.getSummaryData());
+  }
+
+  getSummaryData() {
+    return [
+      { field: 'First Name', value: this.personalDetailsForm.get('firstName')?.value },
+      { field: 'Middle Name', value: this.personalDetailsForm.get('middleName')?.value },
+      { field: 'Last Name', value: this.personalDetailsForm.get('lastName')?.value },
+      { field: 'Unique ID', value: this.personalDetailsForm.get('uniqueId')?.value },
+      { field: 'Contact Number', value: this.personalDetailsForm.get('contactNumber')?.value },
+      { field: 'Aadhar Number', value: this.personalDetailsForm.get('aadharNumber')?.value },
+      { field: 'Email', value: this.personalDetailsForm.get('email')?.value },
+      { field: 'Address', value: this.personalDetailsForm.get('address.address')?.value },
+      { field: 'District', value: this.personalDetailsForm.get('district')?.value },
+      { field: 'Date of Birth', value: this.personalDetailsForm.get('dateOfBirth')?.value },
+      { field: 'Alive/Expired', value: this.personalDetailsForm.get('aliveStatus')?.value },
+      { field: 'Date When Expired', value: this.personalDetailsForm.get('dateWhenExpired')?.value },
+      { field: 'Commission', value: this.serviceDetailsForm.get('commission')?.value },
+      { field: 'Corps', value: this.serviceDetailsForm.get('corps')?.value },
+      { field: 'Date of Enrollment', value: this.serviceDetailsForm.get('dateOfEnrollment')?.value },
+      { field: 'Date of Retirement', value: this.serviceDetailsForm.get('dateOfRetirement')?.value },
+      { field: 'PAN Number', value: this.bankDetailsForm.get('panNumber')?.value },
+      { field: 'Bank Name', value: this.bankDetailsForm.get('bankName')?.value },
+      { field: 'IFSC Code', value: this.bankDetailsForm.get('ifscCode')?.value },
+      { field: 'Account Type', value: this.bankDetailsForm.get('accountType')?.value },
+      { field: 'Account Number', value: this.bankDetailsForm.get('accountNumber')?.value },
+      { field: 'PPO Number', value: this.bankDetailsForm.get('ppoNumber')?.value },
+    ];
+  }
+
+  editField(field: string) {
+    const fieldToStepMap: { [key: string]: number } = {
+      'First Name': 0,
+      'Middle Name': 0,
+      'Last Name': 0,
+      'Unique ID': 0,
+      'Contact Number': 0,
+      'Aadhar Number': 0,
+      'Email': 0,
+      'Address': 0,
+      'District': 0,
+      'Date of Birth': 0,
+      'Alive/Expired': 0,
+      'Date When Expired': 0,
+      'Commission': 1,
+      'Corps': 1,
+      'Date of Enrollment': 1,
+      'Date of Retirement': 1,
+      'PAN Number': 2,
+      'Bank Name': 2,
+      'IFSC Code': 2,
+      'Account Type': 2,
+      'Account Number': 2,
+      'PPO Number': 2,
+    };
+
+    const stepIndex = fieldToStepMap[field];
+    if (stepIndex !== undefined) {
+      this.stepper.selectedIndex = stepIndex;
+    }
+  }
+
+
+
 onSubmit() {
+  console.log('button clicked')
   if (this.personalDetailsForm.valid && this.serviceDetailsForm.valid && this.bankDetailsForm.valid) {
     const formData = {
       Id_ic: this.personalDetailsForm.value.uniqueId,
