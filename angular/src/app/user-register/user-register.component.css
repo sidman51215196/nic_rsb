@@ -1,81 +1,13 @@
 .full-screen{
-  /* overflow: hidden;  */
+  overflow: hidden; 
   height: 100vh; /* Use full viewport height */
-}
-
-.end-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20vh; /* Full viewport height to center vertically */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow effect */
-  padding: 20px; /* Add padding to ensure shadow is not cut off */
-  border-radius: 8px; /* Optionally, add rounded corners */
-  background-color: #fbfafa6c; /* Optional: add background color to make shadow visible */
-  width: 80%; /* Set width to a percentage of the viewport */
-  max-width: 400px; /* Set maximum width for responsiveness */
-  margin: 0 auto;
-  margin-top: 100px;
-}
-.center-content {
-  text-align: center;
-}
-
-.button-container {
-  margin-top: 20px; /* Add some space between the text and the buttons */
-}
-
-.button-container button {
-  background-color: rgb(0, 138, 184); /* Blue background for the buttons */
-  color: white; /* White text for the buttons */
-  border: none; /* Remove the default border */
-  margin: 10px ;
-  border-radius: 4px; /* Slightly round the corners */
-  cursor: pointer; /* Change cursor to pointer on hover */
-}
-
-.button-container button:hover {
-  background-color: darkblue; /* Darker blue on hover */
-}
-
-
-.parent-cardcontainer{
-
 }
 .card-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: max-content; 
-  box-sizing: border-box;
-  width: 100%;
-}
-
-
-
-@media (max-width: 800px) {
-  .card-container {
-    flex-direction: column; /* Stack items vertically */
-    height: auto; /* Let the height adjust based on content */
-    padding: 20px; /* Add some padding */
-    margin-top: auto;
-    /* margin-bottom: 100vh; */
-  }
-}
-@media (max-width: 600px) {
-  .card-container {
-    flex-direction: column; /* Stack items vertically */
-    height: 150vh; /* Let the height adjust based on content */
-    padding: 20px; /* Add some padding */
-    margin-top: auto;
-    /* margin-bottom: 100vh; */
-  }
-}
-
-.responsive-card {
-  margin: 20px;
+  height: 80vh; /* Use full viewport height */
   padding: 20px;
-  box-sizing: border-box;
 }
 
 mat-card {
@@ -132,20 +64,10 @@ input.mat-input-element {
   width: 100%;
 }
 
-.three-items{
+.name{
   display: flex;
   flex-direction: row;
   gap: 10px;
-}
-
-.two-items{
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-
-.one-item{
-
 }
 
 .progress{
@@ -157,14 +79,11 @@ input.mat-input-element {
   padding: 5px;
 }
 
-.large-space{
-  padding: 10px;
+.address {
+  width: 100%;
 }
 
-
-
 ::ng-deep .blue-button {
-  margin: 5px;
   background-color: rgb(0, 138, 184) !important;
   color: white !important; /* Ensures the text is readable against the blue background */
 }
@@ -172,17 +91,6 @@ input.mat-input-element {
   background-color: darkblue !important; /* Optional: A darker blue for the hover state */
 }
 
-.form-width1{
-  width: 240px;
-}
-
-.form-width2{
-  width: 360px;
-}
-
-.form-width3{
-  width: 740px;
-}
 /* .name-form-field {
   width: 500px;
 } */
@@ -194,50 +102,3 @@ input.mat-input-element {
       width: 100%; 
   }
 } */
-
-@media screen and (max-width: 800px) {
-  .three-items {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .two-items{
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .form-width1 {
-    width: 550px;
-  }
-  .form-width2 {
-    width: 250px; /* Ensure form fields take the full width on small screens */
-  }
-
-  .form-width3{
-    width: 250px;
-  }
-}
-
-@media screen and (max-width: 600px) {
-
-  .three-items {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .two-items{
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .form-width1 {
-    width: 250px;
-  }
-  .form-width2 {
-    width: 250px; /* Ensure form fields take the full width on small screens */
-  }
-
-  .form-width3{
-    width: 250px;
-  }
-}
