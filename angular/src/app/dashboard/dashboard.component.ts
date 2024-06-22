@@ -6,9 +6,9 @@ import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
 import { LocalStorageService } from '../services/local-storage.service';
 import { NgIf } from '@angular/common';
-import {HeaderComponent} from '../header/header.component';
-
-
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { Header2Component } from '../header2/header.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -19,9 +19,9 @@ import {HeaderComponent} from '../header/header.component';
     MatListModule,
     MatButtonModule,
     NgIf,
-    HeaderComponent
-
-  
+    HeaderComponent,
+    FooterComponent,
+    Header2Component, 
   ],
   providers: [LocalStorageService], 
   templateUrl: './dashboard.component.html',
