@@ -1,0 +1,129 @@
+/* src/app/header/header.component.css */
+header {
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.1); /* Transparent background */
+  position: fixed; /* Fix the header at the top */
+  width: 100%;
+  z-index: 1000;
+  backdrop-filter: blur(20px); /* Optional: add blur effect for better text readability */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  max-height: 100px; /* Adjust based on your desired logo size */
+}
+
+.logo-text {
+  font-size: 16px; /* Adjust based on your desired text size */
+  margin-left: 10px; /* Adjust based on your desired spacing */
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.align-items-center {
+  align-items: center !important;
+}
+
+.ms-2 {
+  margin-left: 0.5rem !important;
+}
+
+.logo:hover {
+  cursor: pointer;
+}
+
+.desktop_menu {
+  margin-top: 24px;
+}
+
+.desktop_menu ul {
+  padding: 0;
+  margin: 0;
+}
+
+.desktop_menu ul li {
+  list-style-type: none;
+  color: white; /* Change to white for readability */
+  display: inline-block;
+  font-size: 18px;
+  margin-left: 26px;
+}
+
+.desktop_menu ul li a {
+  text-decoration: none; /* Remove underline from links */
+  color: rgb(0, 0, 0); /* Set link color to white for readability */
+}
+
+.desktop_menu ul li a:hover {
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+  color: rgb(18, 6, 241);
+  transition: 0.2s ease-in-out;
+}
+
+.menu-icon {
+  display: none;
+}
+
+@media screen and (max-width: 900px) {
+  .d-flex.flex-column {
+    flex-direction: column !important; /* Ensure flex-direction is column */
+    align-items: center !important; /* Center align items */
+  }
+
+  .logo-text {
+    text-align: center; /* Center align text */
+    font-size: 14px; /* Adjust font size as needed */
+    margin-top: 5px; /* Optional: Add space between logo and text */
+  }
+}
+
+@media screen and (min-width: 128px) and (max-width: 900px) {
+  .desktop_menu {
+    position: fixed !important;
+    right: -280px;
+    transition: 0.4s ease-in-out;
+    top: 64px;
+    background: rgb(241, 240, 240); /* Light blue semi-transparent background */
+    width: 280px;
+    height: -400px;
+    z-index: 1000;
+  }
+
+  .desktop_menu.open {
+    background: lightblue; /* Light blue background when menu is open */
+  }
+
+  .desktop_menu ul li {
+    display: block;
+    text-align: left;
+    margin: 0;
+    padding: 10px 0 10px 26px;
+    border-bottom: 1px solid grey;
+  }
+
+  .menu-icon {
+    display: block;
+    color: rgb(0, 0, 0);
+    font-size: 40px;
+    padding-top: 10px;
+    z-index: 1001;
+  }
+
+  .mobile_menu {
+    right: 0;
+    transition: 0.4s ease-in-out;
+  }
+
+  .logo-text {
+    font-size: 15px; /* Adjust the font size as per your requirement */
+    
+  }
+}

@@ -1,39 +1,44 @@
-<header class="app-header">
-  <app-header></app-header>
-</header>
+<div class="dash-entire">
+  <header class="app-header">
+    <app-header2></app-header2>
+  </header>
 
-<div class="dash-container">
-  <mat-toolbar color="primary">
-    <mat-toolbar-row>
-      <!-- Button to toggle the sidenav -->
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <h1>Welcome {{ username }}</h1>
-    </mat-toolbar-row>
-  </mat-toolbar>
+  <div class="dash-container">
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <!-- Button to toggle the sidenav -->
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <h1>Welcome {{ username }}</h1>
+      </mat-toolbar-row>
+    </mat-toolbar>
 
-  <mat-sidenav-container >
-    <!-- Sidenav definition with a template reference variable 'sidenav' -->
-    <mat-sidenav #sidenav opened="true" mode="side" class ="sidenav_dash">
-      <mat-nav-list >
-        <!-- Navigation items inside the sidenav with href attributes -->
-        <a mat-list-item href="/home">Home</a>
-        <a mat-list-item href="/about">About</a>
-        <a *ngIf="userRole === 2" mat-list-item href="/user-register">Sainik Register</a>
-        <a mat-list-item href="/update-profile">Update Profile</a>
-        <a mat-list-item href="/update-profile">Delete Profile</a>
+    <mat-sidenav-container>
+      <!-- Sidenav definition with a template reference variable 'sidenav' -->
+      <mat-sidenav #sidenav opened="true" mode="side">
+        <mat-nav-list>
+          <!-- Navigation items inside the sidenav with href attributes -->
+          <a mat-list-item href="/home">Home</a>
+          <a mat-list-item href="/about">About</a>
+          <a mat-list-item href="/user-register">User Register</a>
+          <a mat-list-item href="/update-profile">Update Profile</a>
 
-        <a *ngIf="userRole === 2" mat-list-item>userrole2</a>
-        <a *ngIf="userRole === 1" mat-list-item href="/register">Register</a>
-      </mat-nav-list>
-    </mat-sidenav>
+          <a *ngIf="userRole === 2" mat-list-item>userrole2</a>
+          <a *ngIf="userRole === 1" mat-list-item href="/register">Register</a>
+        </mat-nav-list>
+      </mat-sidenav>
 
-    <!-- Main content area when the sidenav is present -->
-    <mat-sidenav-content>
-      <div style="height:70vh">
-        <p>main content</p>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+      <!-- Main content area when the sidenav is present -->
+      <mat-sidenav-content>
+        <div style="height:70vh" class="main-content">
+          <p>main content</p>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+
+  <footer>
+    <app-footer></app-footer>
+  </footer>
 </div>
