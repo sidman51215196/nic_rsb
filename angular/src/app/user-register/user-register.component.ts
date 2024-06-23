@@ -17,6 +17,7 @@ import { MatStepper } from '@angular/material/stepper';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTableDataSource } from '@angular/material/table';
+import { FooterComponent } from '../footer/footer.component';
 
 
 @Component({
@@ -42,7 +43,8 @@ import { MatTableDataSource } from '@angular/material/table';
     CommonModule,
     MatIconModule,
     MatProgressBarModule,
-    HttpClientModule
+    HttpClientModule,
+    FooterComponent
   ]
 })
 export class UserRegisterComponent {
@@ -62,9 +64,9 @@ export class UserRegisterComponent {
   ];
   
   corpsOptions: { value: number, label: string }[] = [
-    { value: 1, label: 'Indian Army Corps' },
-    { value: 2, label: 'Indian Navy Corps' },
-    { value: 3, label: 'Indian Air Force Corps' }
+    { value: 1, label: 'Indian Army' },
+    { value: 2, label: 'Indian Navy' },
+    { value: 3, label: 'Indian Air Force' }
   ];
 
   districtChoices = [
@@ -74,11 +76,11 @@ export class UserRegisterComponent {
   ];
 
   accountTypes: string[] = [
-    'joint', 'single'
+    'Single','Joint'
   ];
 
   dataSource!: MatTableDataSource<any>;
-  columnsToDisplay = ['field', 'value', 'edit'];
+  columnsToDisplay = ['field', 'value'];
   stepper: any;
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
@@ -146,19 +148,28 @@ export class UserRegisterComponent {
   getSummaryData() {
     return [
       { field: 'First Name', value: this.personalDetailsForm.get('firstName')?.value },
-      { field: 'Middle Name', value: this.personalDetailsForm.get('middleName')?.value },
+      { field: 'Middle Name', value: this.personalDetailsForm.get('middleName')?.value?.trim() !== '' ? this.personalDetailsForm.get('middleName')?.value : '---' },
       { field: 'Last Name', value: this.personalDetailsForm.get('lastName')?.value },
       { field: 'Unique ID', value: this.personalDetailsForm.get('uniqueId')?.value },
       { field: 'Contact Number', value: this.personalDetailsForm.get('contactNumber')?.value },
       { field: 'Aadhar Number', value: this.personalDetailsForm.get('aadharNumber')?.value },
       { field: 'Email', value: this.personalDetailsForm.get('email')?.value },
       { field: 'Address', value: this.personalDetailsForm.get('address.address')?.value },
-      { field: 'District', value: this.personalDetailsForm.get('district')?.value },
+      { field: 'District', value: this.personalDetailsForm.get('district')?.value === 1 ? 'Gangtok' :
+        this.personalDetailsForm.get('district')?.value === 2 ? 'Gyalshing' :
+        this.personalDetailsForm.get('district')?.value === 3 ? 'Namchi' :
+        this.personalDetailsForm.get('district')?.value },      
       { field: 'Date of Birth', value: this.personalDetailsForm.get('dateOfBirth')?.value },
       { field: 'Alive/Expired', value: this.personalDetailsForm.get('aliveStatus')?.value },
-      { field: 'Date When Expired', value: this.personalDetailsForm.get('dateWhenExpired')?.value },
-      { field: 'Commission', value: this.serviceDetailsForm.get('commission')?.value },
-      { field: 'Corps', value: this.serviceDetailsForm.get('corps')?.value },
+      { field: 'Date When Expired', value: this.personalDetailsForm.get('dateWhenExpired')?.value !== null ? this.personalDetailsForm.get('dateWhenExpired')?.value : '---' },
+      { field: 'Commission', value: this.serviceDetailsForm.get('commission')?.value === 1 ? 'Commissioned Officer(CO)' :
+        this.serviceDetailsForm.get('commission')?.value === 2 ? 'Junior-Commissioned Officer(JCO)' :
+        this.serviceDetailsForm.get('commission')?.value === 3 ? 'Non-Commissioned Officer(NCO)' :
+        this.serviceDetailsForm.get('commission')?.value },
+        { field: 'Corps', value: this.serviceDetailsForm.get('corps')?.value === 1 ? 'Indian Army' :
+          this.serviceDetailsForm.get('corps')?.value === 2 ? 'Indian Navy' :
+          this.serviceDetailsForm.get('corps')?.value === 3 ? 'Indian Air Force' :
+          this.serviceDetailsForm.get('corps')?.value },
       { field: 'Date of Enrollment', value: this.serviceDetailsForm.get('dateOfEnrollment')?.value },
       { field: 'Date of Retirement', value: this.serviceDetailsForm.get('dateOfRetirement')?.value },
       { field: 'PAN Number', value: this.bankDetailsForm.get('panNumber')?.value },
@@ -205,7 +216,6 @@ export class UserRegisterComponent {
 
 
 onSubmit() {
-  console.log('button clicked')
   if (this.personalDetailsForm.valid && this.serviceDetailsForm.valid && this.bankDetailsForm.valid) {
     const formData = {
       Id_ic: this.personalDetailsForm.value.uniqueId,
@@ -336,13 +346,13 @@ onSubmit() {
   submitCard(cardNumber: number) {
     switch (cardNumber) {
       case 1:
-        if (this.personalDetailsForm.valid) this.moveToNextCard();
+        if (this.personalDetailsForm.valid)this.moveToNextCard();
         break;
       case 2:
         if (this.serviceDetailsForm.valid) this.moveToNextCard();
         break;
       case 3:
-        if (this.bankDetailsForm.valid) this.moveToNextCard();
+        if (this.bankDetailsForm.valid)this.moveToNextCard();
         break;
       case 4:
         if (this.familyDetailsForm.valid) this.moveToNextCard();

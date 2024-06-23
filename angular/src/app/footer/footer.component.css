@@ -1,5 +1,6 @@
 /* src/app/footer/footer.component.css */
 footer {
+  position: fixed;
   bottom: 0;
   width: 100%;
   background-color: rgb(200, 199, 199);

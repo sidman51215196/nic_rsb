@@ -14,4 +14,9 @@ export class LocalStorageService {
   getUsername(): string {
     return localStorage.getItem('username') || ''; // Default to an empty string if not found
   }
+
+  getUserDistrict(): number {
+    const userDistrict = localStorage.getItem('userDistrict');
+    return userDistrict ? +userDistrict : 0; // Convert userDistrict to a number, default to 0 if not found
+  }
 }

@@ -6,14 +6,75 @@
   z-index: 1000; /* Ensure the header is above other content */
 }
 
+.space {
+  margin-top: 8px; /* Adjust as needed */
+}
 
 .dash-container {
   margin-top: 120px; /* Adjust margin top to accommodate the header height */
   /* min-height: calc(100vh - 120px); Calculate minimum height to fill viewport */
 }
 
-.sidenav_dash{
-  width:30%;
+.search-container {
+  
+  align-self: center; /* Centers vertically within the content area */
+  /* margin-bottom: 80vh; */
+  /* position: fixed; */
+}
+
+.additional-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start of the flex container */
+  padding: 20px;
+  background-color: #f0f0f0;
+  text-align: center;
+  margin-bottom: 50vh;
+  margin-left: 10vh;
+}
+
+.count-container {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
+.custom-sidenav {
+  width: 250px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure the wrapper takes full height of the viewport */
+}
+
+.main-content {
+  width: 100%; /* Ensure content takes full width */
+  max-width: 800px; /* Adjust as needed */
+  padding: 20px; /* Optional: Add padding */
+  margin-bottom: 40vh;
+
+}
+
+
+.table-header {
+  font-size: 18px; /* Adjust font size as needed */
+  font-weight: bold; /* Make the font bold */
+  background-color: #e1f5fe;
+  
+}
+
+/* CSS for alternate row colors */
+.mat-row:nth-child(odd) {
+  background-color: white; /* Set the background color for odd rows */
+}
+
+.mat-row:nth-child(even) {
+  background-color: #f0f0f0; /* Set the background color for even rows */
 }
 
 footer {
@@ -22,4 +83,23 @@ footer {
   left: 0;
   width: 100%;
   z-index: 1000;
+  padding: 10px;
+}
+
+
+@media (max-width: 800px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .main-content {
+    order: 2;
+    margin-top: 10px;
+  }
+
+  .additional-content {
+    order: 1;
+    width: 100%; /* Ensure it takes the full width */
+    margin-bottom: 1vh;
+  }
 }
