@@ -22,8 +22,9 @@
           <!-- Navigation items inside the sidenav with href attributes -->
           <a mat-list-item href="/home">Home</a>
           <a mat-list-item href="/about">About</a>
-          <a *ngIf="userRole === 2" mat-list-item href="/user-register">User Register</a>
+          <a *ngIf="userRole === 2"  mat-list-item href="/user-register">User Register</a>
           <a mat-list-item href="/update-profile">Update Profile</a>
+
           <a *ngIf="userRole === 1" mat-list-item href="/register">Register</a>
         </mat-nav-list>
       </mat-sidenav>
@@ -38,7 +39,7 @@
       </mat-sidenav-content> -->
 
 
-      <mat-sidenav-content>
+      <mat-sidenav-content class="center-content">
         <div class="main-content">
           <div class="filter-section">
             <mat-form-field>
@@ -50,36 +51,36 @@
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <ng-container matColumnDef="slNo">
               <th mat-header-cell *matHeaderCellDef> No. </th>
-              <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
+              <td mat-cell *matCellDef="let element; let i = index"> {{ i + 1 }} </td>
             </ng-container>
 
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef> Name </th>
-              <td mat-cell *matCellDef="let element">{{ element.first_name }} {{ element.last_name }}</td>
+              <td mat-cell *matCellDef="let element"> {{ element.first_name }} {{ element.last_name }} </td>
             </ng-container>
 
             <ng-container matColumnDef="uid">
               <th mat-header-cell *matHeaderCellDef> UID </th>
-              <td mat-cell *matCellDef="let element">{{ element.Id_ic }}</td>
+              <td mat-cell *matCellDef="let element"> {{ element.Id_ic }} </td>
             </ng-container>
 
             <ng-container matColumnDef="address">
               <th mat-header-cell *matHeaderCellDef> Address </th>
-              <td mat-cell *matCellDef="let element">{{ element.address }}</td>
+              <td mat-cell *matCellDef="let element"> {{ element.address }} </td>
             </ng-container>
 
             <ng-container matColumnDef="dob">
               <th mat-header-cell *matHeaderCellDef> Date of Birth </th>
-              <td mat-cell *matCellDef="let element">{{ element.date_of_birth | date }}</td>
+              <td mat-cell *matCellDef="let element"> {{ element.date_of_birth | date }} </td>
             </ng-container>
 
             <ng-container matColumnDef="corps">
               <th mat-header-cell *matHeaderCellDef> Corps </th>
-              <td mat-cell *matCellDef="let element">{{ element.service_details_corps }}</td>
+              <td mat-cell *matCellDef="let element"> {{ element.service_details_corps }} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row"></tr>
           </table>
 
           <mat-paginator [length]="totalRecords"
@@ -87,17 +88,6 @@
                          [pageSizeOptions]="pageSizeOptions"
                          (page)="pageChanged($event)">
           </mat-paginator>
-        </div>
-        <div class="additional-content">
-          <div class="search-container">
-            <mat-form-field appearance="fill">
-              <mat-label>Search</mat-label>
-              <input matInput (keyup)="applyFilter($event)" placeholder="Search...">
-            </mat-form-field>
-          </div>
-          <div class="count-container">
-            <p>No of users registered: </p>
-          </div>
         </div>
       </mat-sidenav-content>
       
