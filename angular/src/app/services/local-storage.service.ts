@@ -16,7 +16,14 @@ export class LocalStorageService {
   }
 
   getUserDistrict(): number {
-    const userDistrict = localStorage.getItem('userDistrict');
+    const userDistrict = localStorage.getItem('district');
     return userDistrict ? +userDistrict : 0; // Convert userDistrict to a number, default to 0 if not found
+  }
+  remove(key: string): void {
+    localStorage.removeItem(key);
+  }
+
+  clear(): void {
+    localStorage.clear();
   }
 }

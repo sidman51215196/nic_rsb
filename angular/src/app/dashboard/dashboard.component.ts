@@ -62,6 +62,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   userRole: number = 0;
   username: string = '';
+  userdistrict:number=0
   pageSizeOptions: number[] = [5, 10];
   pageSize: number = 10;
 
@@ -70,6 +71,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.userRole = this.localStorageService.getUserRole();
     this.username = this.localStorageService.getUsername();
+    this.userdistrict=this.localStorageService.getUserDistrict();
     this.fetchData();
   }
 
@@ -77,8 +79,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  
   fetchData(pageIndex: number = 0, pageSize: number = 10): void {
-    const url = `http://127.0.0.1:8000/listsainik`;
+    let url: string;
+
+    if (this.userRole === 1) {
+      url = `http://127.0.0.1:8000/listsainik`;
+    } else if (this.userRole === 2) {
+      url = `http://127.0.0.1:8000/sainikbydistrict/${this.userdistrict}`;
+    } else {
+      // Handle other user roles or default case
+      url = `http://127.0.0.1:8000/`;
+    }
 
     this.http.get<{ total_count: number, sainiks: SainikPersonalDetails[] }>(url)
       .pipe(

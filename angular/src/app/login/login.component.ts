@@ -47,7 +47,7 @@ export class LoginComponent {
 
             console.log('User role:', role);
             console.log('User district:', district);
-            console.log('district:', district);
+            console.log('districtzzzz:', district);
           }
 
           // Navigate to the dashboard on successful login

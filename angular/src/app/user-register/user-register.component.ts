@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 import { NgIf } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,6 +27,7 @@ import { FooterComponent } from '../footer/footer.component';
   styleUrls: ['./user-register.component.css'],
   standalone: true,
   imports: [
+   
     ReactiveFormsModule,
     FormsModule,
     MatCardModule,
@@ -83,7 +85,7 @@ export class UserRegisterComponent {
   columnsToDisplay = ['field', 'value'];
   stepper: any;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private http: HttpClient,private router: Router,) {
     this.personalDetailsForm = this.fb.group({
       firstName: ['', Validators.required],
       middleName: [''],
@@ -258,6 +260,8 @@ onSubmit() {
       .subscribe(
         response => {
           console.log('Registration successful', response);
+          alert('user registration successful')
+          this.router.navigate(['/dashboard']);
           // Optionally, reset the forms after successful submission
           // this.personalDetailsForm.reset();
           // this.serviceDetailsForm.reset();
@@ -265,6 +269,7 @@ onSubmit() {
         },
         error => {
           console.error('Registration failed', error);
+          alert('registration failed')
           // Handle error scenarios, such as displaying an error message
         }
       );
