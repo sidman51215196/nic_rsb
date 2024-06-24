@@ -55,9 +55,11 @@ export class LoginComponent {
         },
         error => {
           console.error('Login failed', error);
+          alert('Invalid login credentials');
         }
       );
     } else {
+      
       console.log('Form is invalid');
       console.log('Email errors:', this.loginForm.get('email')?.errors);
       console.log('Password errors:', this.loginForm.get('password')?.errors);

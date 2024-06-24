@@ -9,11 +9,13 @@ import { SuperadminDashboardComponent } from './superadmin-dashboard/superadmin-
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { UserRegisterComponent } from './user-register/user-register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import {ProfileComponent} from './profile/profile.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, 
+  imports: [
+            CommonModule, 
             RouterOutlet,
             HeaderComponent,
             HomeComponent,
@@ -23,6 +25,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
             AdminDashboardComponent,
             UserRegisterComponent,
             DashboardComponent,
+            ProfileComponent
             
           ],
   templateUrl: './app.component.html',

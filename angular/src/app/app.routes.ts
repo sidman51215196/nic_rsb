@@ -9,6 +9,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { AuthGuard } from './guards/auth.guard';
 import { UserRegisterComponent } from './user-register/user-register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import {ProfileComponent} from './profile/profile.component'
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,4 +22,5 @@ export const routes: Routes = [
   { path: 'admin-dashboard', component: AdminDashboardComponent},
   { path: 'user-register', component: UserRegisterComponent},
   { path: 'dashboard', component: DashboardComponent },
+  {path:'profile', component: ProfileComponent}
 ];
