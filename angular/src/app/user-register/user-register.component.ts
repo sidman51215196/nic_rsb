@@ -46,7 +46,8 @@ import { FooterComponent } from '../footer/footer.component';
     MatIconModule,
     MatProgressBarModule,
     HttpClientModule,
-    FooterComponent
+    FooterComponent,
+    
   ]
 })
 export class UserRegisterComponent {

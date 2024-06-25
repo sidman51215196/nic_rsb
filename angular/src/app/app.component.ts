@@ -10,6 +10,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { UserRegisterComponent } from './user-register/user-register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {ProfileComponent} from './profile/profile.component';
+import {UserdetailsComponent} from './userdetails/userdetails.component'
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ import {ProfileComponent} from './profile/profile.component';
             AdminDashboardComponent,
             UserRegisterComponent,
             DashboardComponent,
-            ProfileComponent
+            ProfileComponent,
+            UserdetailsComponent
             
           ],
   templateUrl: './app.component.html',

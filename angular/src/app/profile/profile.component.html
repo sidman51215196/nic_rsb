@@ -1,11 +1,31 @@
 <header class="app-header">
     <app-header2></app-header2>
   </header>
-
   
   <p>profile works!</p>
-
-
+  
+  <h2 mat-dialog-title>Change Password</h2>
+  <div mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Current Password</mat-label>
+      <input matInput type="password" placeholder="Enter your current password" [(ngModel)]="currentPassword">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>New Password</mat-label>
+      <input matInput type="password" placeholder="Enter your new password" [(ngModel)]="newPassword">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Confirm New Password</mat-label>
+      <input matInput type="password" placeholder="Confirm your new password" [(ngModel)]="confirmPassword">
+    </mat-form-field>
+  </div>
+  
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancelClick()">Cancel</button>
+    <button mat-button color="primary" [disabled]="!isFormValid()" (click)="onChangePassword()">Done</button>
+  </div>
+  
   <footer>
     <app-footer></app-footer>
   </footer>
+  

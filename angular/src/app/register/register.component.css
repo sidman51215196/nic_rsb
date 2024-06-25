@@ -1,45 +1,61 @@
-.card {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
 }
 
-h2 {
-  text-align: center;
+.page-container {
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  min-height: 100vh; /* Ensure the container takes at least full viewport height */
+  background-color: #152C49; /* Background color for the page */
+  padding-top: 1px; /* Adjusted padding to move login-container a little bit towards the top */
+  box-sizing: border-box; /* Ensure padding doesn't add extra space */
 }
 
-.form-group {
+.register-container{
+  background-color: rgba(255, 255, 255, 0.791); /* Semi-transparent background */
+  padding: 50px; /* Adjusted padding to avoid overflow */
+  border-radius: 8px; /* Add rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  max-width: 500px; /* Limit the width of the form */
+  width: 100%;
+  text-align: center; /* Center align text */
+  margin: 100px;
+}
+
+.register-logo {
+  max-width: 120px; /* Adjust the logo size as needed */
+  margin-bottom: 20px; /* Space between logo and heading */
+}
+
+.register-container h3 {
+  margin-bottom: 20px;
+  color: rgb(0, 0, 0);
+}
+
+.register-container .form-group {
   margin-bottom: 15px;
+  color: rgb(68, 67, 67);
+  text-align: left; /* Left align form group labels */
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input, select {
+.register-container .btn {
   width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
+  color: rgb(255, 255, 255);
 }
 
-small {
-  color: red;
+/* Media query for mobile screens */
+@media (max-width: 767px) {
+  .register-container {
+    max-width: 90%; /* Limit the width to 90% of the viewport width */
+  }
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:disabled {
-  background-color: #ccc;
+@media (max-width: 480px) {
+  .register-container {
+    padding: 10px; /* Further adjust padding for smaller screens */
+  }
 }
