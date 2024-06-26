@@ -59,7 +59,7 @@ export class ChangePasswordDialogueComponent implements OnInit {
 
       const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
-      this.http.put('http://127.0.0.1:8000/passwordReset', formData).subscribe(
+      this.http.put('http://127.0.0.1:8000/passwordReset', formData, { headers }).subscribe(
         response => {
           console.log('Password reset successful', response);
           this.dialogRef.close();

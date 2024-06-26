@@ -36,9 +36,11 @@ export class RegisterComponent {
       this.http.post('http://127.0.0.1:8000/register', formData, { headers })
         .subscribe(
           response => {
+            alert('registration successful')
             console.log('Registration successful', response);
           },
           error => {
+            alert('registration failed')
             console.error('Registration failed', error);
           }
         );
