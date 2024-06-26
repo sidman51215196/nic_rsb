@@ -119,6 +119,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   userdistrict: number = 0;
   pageSizeOptions: number[] = [5, 10];
   pageSize: number = 10;
+  displaydetails: boolean = false;
+
 
   personalDetailsForm!: FormGroup;
   serviceDetailsForm!: FormGroup;
@@ -198,6 +200,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       )
       .subscribe(
         details => {
+          this.displaydetails=true;
+          console.log(this.displaydetails,'displaydetails')
           console.log('View details for:', details);
           this.selectedSainikDetails = details;
           this.personalDetails = [
@@ -214,23 +218,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { field: 'Is Alive', value: details.is_alive },
             { field: 'Expiry Date', value: details.expiry_date },
           ];
-
-          this.serviceDetails = details.services.map(service => ({
-            field: 'Corps', value: service.corps,
-            description: service.description,
-            commission: service.commission,
-            start_date: service.start_date,
-            end_date: service.end_date,
-          }));
-
-          this.bankDetails = details.bankdetails.map(bank => ({
-            field: 'Account Number', value: bank.account_number,
-            pan_number: bank.pan_number,
-            bank_name: bank.bank_name,
-            ifsc_code: bank.ifsc_code,
-            account_type: bank.account_type,
-            ppo_number: bank.ppo_number,
-          }));
+  
+          this.serviceDetails = details.services.map(service => [
+            { field: 'Corps', value: service.corps },
+            { field: 'Description', value: service.description },
+            { field: 'Commission', value: service.commission },
+            { field: 'Start Date', value: service.start_date },
+            { field: 'End Date', value: service.end_date }
+          ]).flat();
+  
+          this.bankDetails = details.bankdetails.map(bank => [
+            { field: 'Account Number', value: bank.account_number },
+            { field: 'PAN Number', value: bank.pan_number },
+            { field: 'Bank Name', value: bank.bank_name },
+            { field: 'IFSC Code', value: bank.ifsc_code },
+            { field: 'Account Type', value: bank.account_type },
+            { field: 'PPO Number', value: bank.ppo_number }
+          ]).flat();
         }
       );
   }

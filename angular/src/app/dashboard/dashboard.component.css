@@ -12,7 +12,7 @@
 
 .dash-container {
   margin-top: 120px; 
-  /* min-height: calc(100vh - 120px); Calculate minimum height to fill viewport */
+  min-height: 100vh; 
 }
 
 .custom-sidenav {
@@ -32,7 +32,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 80vh;
   /* overflow-y: hidden; */
   background: #ffffff;
 }
@@ -60,7 +60,7 @@
 }
 
 footer {
-  position: fixed;
+  /* position: fixed; */
   bottom: 0;
   left: 0;
   width: 100%;
@@ -82,4 +82,48 @@ footer {
     width: 100%; /* Ensure it takes the full width */
     margin-bottom: 1vh;
   }
+}
+
+.details-container {
+  width: 100vh;
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.details-inside-container {
+  display: flex;
+  justify-content: space-between; /* Adjust spacing between tiles */
+}
+
+.mat-grid-tile {
+  flex: 1; /* Each tile takes equal space */
+  min-width: 300px; /* Adjust minimum width of each tile */
+  min-width: calc(33.33% - 100px); /* Adjust maximum width of each tile */
+}
+
+.mat-card {
+  width: 100%; /* Ensure the card takes full width of its container */
+  height: 100%; /* Ensure the card takes full height of its container */
+}
+
+.table{
+  width: 100%;
+  text-align: center;
+}
+
+.header-cell {
+  background-color: #f0f8ff; /* Light blue background color */
+  text-align: center; /* Center align text */
+  font-weight: bold;
+}
+
+.title {
+  display: flex;
+  align-items: center; /* align vertical */
+}
+
+.center-align {
+  text-align: center;
+  vertical-align: middle;
 }

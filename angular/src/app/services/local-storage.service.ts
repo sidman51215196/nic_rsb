@@ -19,11 +19,20 @@ export class LocalStorageService {
     const userDistrict = localStorage.getItem('district');
     return userDistrict ? +userDistrict : 0; // Convert userDistrict to a number, default to 0 if not found
   }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+  
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
   remove(key: string): void {
     localStorage.removeItem(key);
   }
 
   clear(): void {
-    localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
   }
 }

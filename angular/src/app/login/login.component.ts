@@ -40,10 +40,12 @@ export class LoginComponent {
             const username = authenticatedUser.email;
             const role = authenticatedUser.role;
             const district = authenticatedUser.district;
+            const token = authenticatedUser.access;
 
             localStorage.setItem('username', username);
             localStorage.setItem('userrole', role);
             localStorage.setItem('district', district);
+            localStorage.setItem('token', token);
 
             console.log('User role:', role);
             console.log('User district:', district);
