@@ -11,6 +11,7 @@ import { UserRegisterComponent } from './user-register/user-register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {ProfileComponent} from './profile/profile.component'
 import {UserdetailsComponent} from './userdetails/userdetails.component'
+import {authGuard} from './services/auth.guard'
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -18,11 +19,11 @@ export const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'superadmin-dashboard', component: SuperadminDashboardComponent },
-  { path: 'admin-dashboard', component: AdminDashboardComponent},
-  { path: 'user-register', component: UserRegisterComponent},
-  { path: 'dashboard', component: DashboardComponent },
-  {path:'profile', component: ProfileComponent},
-  {path:'user-details',component: UserdetailsComponent},
+  { path: 'register', component: RegisterComponent ,canActivate:[authGuard]},
+  { path: 'superadmin-dashboard', component: SuperadminDashboardComponent ,canActivate:[authGuard]},
+  { path: 'admin-dashboard', component: AdminDashboardComponent,canActivate:[authGuard]},
+  { path: 'user-register', component: UserRegisterComponent,canActivate:[authGuard]},
+  { path: 'dashboard', component: DashboardComponent ,canActivate:[authGuard]},
+  {path:'profile', component: ProfileComponent,canActivate:[authGuard]},
+  {path:'user-details',component: UserdetailsComponent,canActivate:[authGuard]},
 ];

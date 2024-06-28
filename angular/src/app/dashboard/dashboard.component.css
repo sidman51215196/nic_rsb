@@ -12,21 +12,31 @@
 
 .dash-container {
   margin-top: 120px; 
-  min-height: 100vh; 
+  min-height: 100vh;
+  /* background-color: #152C49;  */
 }
 
 .custom-sidenav {
   width: 250px;
+  /* background-color: #152C49;  */
 }
 
-.content-wrapper {
-  display: flex;
-  flex: 1;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Ensure the wrapper takes full height of the viewport */
+::ng-deep .menu .nav-item {
+  transition: font-size 0.3s, background-color 0.3s;
 }
+
+::ng-deep .menu .nav-item:hover {
+  background-color: #e1f5fe !important;
+  font-size: 40px;
+  color: blue;
+}
+
+.mat-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for elevation */
+  transition: box-shadow 0.3s ease; /* Smooth transition for hover effects */
+}
+
+
 
 .center-content {
   display: flex;
@@ -42,6 +52,7 @@
   max-width: 1500px; /* Adjust as needed */
   padding: 20px; /* Optional: Add padding */
   margin-bottom: auto;
+  /* background-color: #152C49;  */
 }
 
 .table-header {
@@ -65,6 +76,50 @@ footer {
   left: 0;
   width: 100%;
   z-index: 1000;
+}
+
+.profile-container {
+  width: 100vh; /* Adjust width as needed */
+  height: 400px; /* Example: set a specific height */
+  padding: 20px; /* Add padding for spacing */
+  box-sizing: border-box; /* Include padding in width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.632); /* Add a subtle box-shadow for elevation */
+  max-width: 600px;
+  min-width: 300px;
+}
+
+.center-title3{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: xx-large;
+  margin-bottom: 100px;
+}
+
+.profile-row{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  text-align: right; /* Align labels to the right within their flex container */
+  font-size: larger;
+}
+
+.profile-value {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left; /* Align values to the left within their flex container */
+  
 }
 
 @media (max-width: 800px) {
@@ -126,4 +181,21 @@ footer {
 .center-align {
   text-align: center;
   vertical-align: middle;
+}
+
+.center-title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-title2{
+  width: 100%;
+}
+
+.middle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }

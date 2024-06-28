@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { UserInterface } from '../user.interface';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,12 @@ import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http'
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router, 
+    private http: HttpClient,
+    // Correct injection of AuthService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(2)]]
@@ -34,7 +40,7 @@ export class LoginComponent {
       this.http.post(url, body, { headers }).subscribe(
         (response: any) => {
           console.log('Login successful', response);
-
+          
           const authenticatedUser = response.authenticatedUser;
           if (authenticatedUser) {
             const username = authenticatedUser.email;
@@ -42,14 +48,15 @@ export class LoginComponent {
             const district = authenticatedUser.district;
             const token = authenticatedUser.access;
 
+            
+
+           
             localStorage.setItem('username', username);
             localStorage.setItem('userrole', role);
             localStorage.setItem('district', district);
             localStorage.setItem('token', token);
 
-            console.log('User role:', role);
-            console.log('User district:', district);
-            console.log('districtzzzz:', district);
+            
           }
 
           // Navigate to the dashboard on successful login
@@ -61,7 +68,6 @@ export class LoginComponent {
         }
       );
     } else {
-      
       console.log('Form is invalid');
       console.log('Email errors:', this.loginForm.get('email')?.errors);
       console.log('Password errors:', this.loginForm.get('password')?.errors);

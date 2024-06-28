@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
@@ -11,6 +11,7 @@ import { UserRegisterComponent } from './user-register/user-register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {ProfileComponent} from './profile/profile.component';
 import {UserdetailsComponent} from './userdetails/userdetails.component'
+
 
 @Component({
   selector: 'app-root',
@@ -34,5 +35,7 @@ import {UserdetailsComponent} from './userdetails/userdetails.component'
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+
+
 
 }

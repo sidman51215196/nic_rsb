@@ -26,6 +26,7 @@ export class ChangePasswordDialogueComponent implements OnInit {
   changePasswordForm: FormGroup;
   email: string | null = null;
   token: string | null = null;
+  error: string | null = null;
 
   constructor(
     private localStorageService: LocalStorageService, 
@@ -43,8 +44,9 @@ export class ChangePasswordDialogueComponent implements OnInit {
   ngOnInit(): void {
     this.email = this.localStorageService.getUsername();
     this.token = this.localStorageService.getToken();
-    console.log(this.email,'maiiiiilllll')// Retrieve email from local storage
-  }
+    console.log(this.email,'maiiiiilllll')
+    console.log(this.token,'tokeeeeee')
+  }  
 
   onCancelClick(): void {
     this.dialogRef.close();
@@ -58,14 +60,21 @@ export class ChangePasswordDialogueComponent implements OnInit {
       };
 
       const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+      console.log('headersss',headers);
 
-      this.http.put('http://127.0.0.1:8000/passwordReset', formData, { headers }).subscribe(
+      this.http.put('http://127.0.0.1:8000/passwordchangeforadmin', formData, { headers }).subscribe(
         response => {
           console.log('Password reset successful', response);
           this.dialogRef.close();
         },
         error => {
           console.error('Error resetting password', error);
+          if (error.status === 401) {
+            // Handle unauthorized error, e.g., show a message to the user
+            this.error = 'Unauthorized access. Please log in again.';
+          } else {
+            this.error = 'An error occurred. Please try again later.';
+          }
         }
       );
     }

@@ -25,7 +25,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { ChangePasswordDialogueComponent } from '../change-password-dialogue/change-password-dialogue.component';
+import { faL } from '@fortawesome/free-solid-svg-icons';
+
 export interface SainikPersonalDetails {
   Id_ic: string;
   first_name: string;
@@ -68,6 +72,7 @@ export interface SainikDetails {
   services: SainikServiceDetails[];
   bankdetails: SainikBankDetails[];
 }
+
 
 @Component({
   selector: 'app-dashboard',
@@ -119,7 +124,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   userdistrict: number = 0;
   pageSizeOptions: number[] = [5, 10];
   pageSize: number = 10;
-  displaydetails: boolean = false;
+  displaydetails:boolean=false;
+  showProfileDetails:boolean=false;
+  mainContent:boolean=true;
+  profileData: { email: string, role: number, district: number } | null = null;
 
 
   personalDetailsForm!: FormGroup;
@@ -130,10 +138,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   personalDetails: { field: string, value: any }[] = [];
   serviceDetails: { field: string, value: any }[] = [];
   bankDetails: { field: string, value: any }[] = [];
+  roleMapping: { [key: number]: string } = {
+    1: 'Super Admin',
+    2: 'Admin'
+    // Add more roles as needed
+  };
+
+  districtMapping: { [key: number]: string } = {
+    1: 'Gangtok',
+    2: 'Gyalshing',
+    3: 'Namchi'
+    // Add more districts as needed
+  };
+
+
 
   constructor(
     private localStorageService: LocalStorageService, 
     private http: HttpClient,
+    public dialog: MatDialog,
     private formBuilder: FormBuilder
   ) {}
 
@@ -151,6 +174,37 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
+
+  showProfile() {
+    this.showProfileDetails = true;
+    this.mainContent = false;
+    this.displaydetails = false;
+
+    this.profileData = { 
+      email: this.username,
+      role: this.userRole,
+      district: this.userdistrict
+    };
+  }
+
+  getRoleName(role: number | undefined = 0): string {
+    return this.roleMapping[role] || 'Unknown';
+  }
+  
+  getDistrictName(district: number | undefined=0): string{
+    return this.districtMapping[district] || 'Unknown';
+  }
+
+  openChangePasswordDialog(): void {
+    const dialogRef = this.dialog.open(ChangePasswordDialogueComponent, {
+      width: '400px'
+    });
+
+    // dialogRef.afterClosed().subscribe(result => {
+    //    Handle dialog close if needed
+    // });
+  }
+
 
   fetchData(pageIndex: number = 0, pageSize: number = 10): void {
     let url: string;
@@ -201,6 +255,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       .subscribe(
         details => {
           this.displaydetails=true;
+          this.mainContent=false;
           console.log(this.displaydetails,'displaydetails')
           console.log('View details for:', details);
           this.selectedSainikDetails = details;
@@ -210,7 +265,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { field: 'Middle Name', value: details.middle_name },
             { field: 'Last Name', value: details.last_name },
             { field: 'Date of Birth', value: details.date_of_birth },
-            { field: 'District', value: details.district },
+            { field: 'District', value: this.getDistrictName2(details.district) },
             { field: 'Address', value: details.address },
             { field: 'Phone Number', value: details.phone_number },
             { field: 'Email', value: details.email },
@@ -218,15 +273,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { field: 'Is Alive', value: details.is_alive },
             { field: 'Expiry Date', value: details.expiry_date },
           ];
-  
+
           this.serviceDetails = details.services.map(service => [
-            { field: 'Corps', value: service.corps },
+            { field: 'Corps', value: this.getCorpsName(service.corps) },
             { field: 'Description', value: service.description },
-            { field: 'Commission', value: service.commission },
+            { field: 'Commission', value: this.getCommissionName(service.commission) },
             { field: 'Start Date', value: service.start_date },
             { field: 'End Date', value: service.end_date }
           ]).flat();
-  
+
           this.bankDetails = details.bankdetails.map(bank => [
             { field: 'Account Number', value: bank.account_number },
             { field: 'PAN Number', value: bank.pan_number },
@@ -237,5 +292,35 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           ]).flat();
         }
       );
+  }
+  getDistrictName2(district: number): string {
+    const districtNames: { [key: number]: string } = {
+      1: 'Gangtok',
+      2: 'Gyalshing',
+      3: 'Namchi'
+    };
+    return districtNames[district] || 'Unknown District';
+  }
+  getCorpsName(corps: number): string {
+    const corpsNames: { [key: number]: string } = {
+      1: 'Indian Army Corps',
+      2: 'Indian Navy Corps',
+      3: 'Indian Air Force Corps'
+    };
+    return corpsNames[corps] || 'Unknown Corps';
+  }
+  getCommissionName(commission: number): string{
+    const commissionNames: { [key: number]: string } = {
+      1: 'Commissioned Officer(CO)',
+      2: 'Junior-Commissioned Officer(JCO)',
+      3: 'Non-Commissioned Officer(NCO)'
+    };
+    return commissionNames[commission] || 'Unknown Corps';
+  }
+
+  goBack() {
+    this.displaydetails = false;
+    this.mainContent=true;
+    this.showProfileDetails = false;
   }
 }

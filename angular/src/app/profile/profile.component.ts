@@ -8,8 +8,9 @@ import { MatCardTitle, MatCardSubtitle } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { NgFor } from '@angular/common';
+import { NgFor,NgIf } from '@angular/common';
 import { LocalStorageService } from '../services/local-storage.service';
+
 
 @Component({
   selector: 'app-profile',
@@ -26,7 +27,8 @@ import { LocalStorageService } from '../services/local-storage.service';
     MatIconModule,
     MatListModule,
     MatTableModule,
-    NgFor
+    NgFor,
+    NgIf
 
   ]
 })
@@ -48,9 +50,13 @@ export class ProfileComponent implements OnInit {
     3: 'Namchi'
     // Add more districts as needed
   };
-  constructor(public dialog: MatDialog, private localStorageService: LocalStorageService) {}
+  constructor(public dialog: MatDialog, private localStorageService: LocalStorageService,
+    ) {}
+
+    
 
   ngOnInit(): void {
+
     this.userRole = this.localStorageService.getUserRole();
     this.username = this.localStorageService.getUsername();
     this.userdistrict = this.localStorageService.getUserDistrict();
