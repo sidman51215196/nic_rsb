@@ -44,8 +44,6 @@ export class ChangePasswordDialogueComponent implements OnInit {
   ngOnInit(): void {
     this.email = this.localStorageService.getUsername();
     this.token = this.localStorageService.getToken();
-    console.log(this.email,'maiiiiilllll')
-    console.log(this.token,'tokeeeeee')
   }  
 
   onCancelClick(): void {
@@ -58,11 +56,10 @@ export class ChangePasswordDialogueComponent implements OnInit {
         ...this.changePasswordForm.value,
         email: this.email
       };
-
+  
       const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-      console.log('headersss',headers);
-
-      this.http.put('http://127.0.0.1:8000/passwordchangeforadmin', formData, { headers }).subscribe(
+  
+      this.http.post('http://127.0.0.1:8000/passwordchangeforadmin', formData, { headers }).subscribe(
         response => {
           console.log('Password reset successful', response);
           this.dialogRef.close();
@@ -77,6 +74,10 @@ export class ChangePasswordDialogueComponent implements OnInit {
           }
         }
       );
+    } else {
+      // Handle form validation errors or password mismatch
+      console.error('Form validation failed');
+      this.error = 'Form validation failed. Please check your inputs.';
     }
   }
 

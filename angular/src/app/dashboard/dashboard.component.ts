@@ -14,7 +14,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {FormsModule,ReactiveFormsModule} from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
@@ -124,6 +124,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   userdistrict: number = 0;
   pageSizeOptions: number[] = [5, 10];
   pageSize: number = 10;
+  token: string | null = null;
   displaydetails:boolean=false;
   showProfileDetails:boolean=false;
   mainContent:boolean=true;
@@ -164,6 +165,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.userRole = this.localStorageService.getUserRole();
     this.username = this.localStorageService.getUsername();
     this.userdistrict = this.localStorageService.getUserDistrict();
+    this.token = this.localStorageService.getToken();
     this.fetchData();
 
     this.personalDetailsForm = this.formBuilder.group({});
@@ -208,6 +210,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   fetchData(pageIndex: number = 0, pageSize: number = 10): void {
     let url: string;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
     if (this.userRole === 1) {
       url = `http://127.0.0.1:8000/listsainik`;
@@ -217,7 +220,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       url = `http://127.0.0.1:8000/`;
     }
 
-    this.http.get<{ total_count: number, sainiks: SainikPersonalDetails[] }>(url)
+    this.http.get<{ total_count: number, sainiks: SainikPersonalDetails[] }>(url,{ headers })
       .pipe(
         catchError(error => {
           console.error('Error fetching data:', error);
@@ -244,8 +247,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   viewDetails(element: SainikPersonalDetails): void {
     console.log('view button clicked')
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     const url = `http://127.0.0.1:8000/sainikdetailsbyid/${element.Id_ic}`;
-    this.http.get<SainikDetails>(url)
+    this.http.get<SainikDetails>(url, { headers })
       .pipe(
         catchError(error => {
           console.error('Error fetching details:', error);
