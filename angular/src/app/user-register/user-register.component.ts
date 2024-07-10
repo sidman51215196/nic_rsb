@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, SecurityContext } from "@angular/core";
 import {
   FormArray,
   FormBuilder,
@@ -6,6 +6,7 @@ import {
   Validators,
   ReactiveFormsModule,
   FormsModule,
+  AbstractControl,
 } from "@angular/forms";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { MatCardModule } from "@angular/material/card";
@@ -26,6 +27,8 @@ import { MatStepperModule } from "@angular/material/stepper";
 import { MatTableModule } from "@angular/material/table";
 import { MatTableDataSource } from "@angular/material/table";
 import { FooterComponent } from "../footer/footer.component";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { LocalStorageService } from "../services/local-storage.service";
 
 @Component({
   selector: "app-user-register",
@@ -63,9 +66,12 @@ export class UserRegisterComponent {
   currentCard = 1;
   totalCards = 5;
   showDateWhenExpired = false;
-  showResCert=false;
-  imagePreview: string | ArrayBuffer | null = null;
-  dragging: boolean = false;
+  showResCert = false;
+  serviceImagePreviews: { [key: number]: string | ArrayBuffer | null } = {};
+  civilImagePreviews: { [key: number]: string | ArrayBuffer | null } = {};
+  draggingService: number | null = null;
+  draggingCivil: number | null = null;
+  uniqueId: number = 0;
 
   commissionOptions: { value: number; label: string }[] = [
     { value: 1, label: "Commissioned Officer (CO)" },
@@ -101,11 +107,14 @@ export class UserRegisterComponent {
   dataSource!: MatTableDataSource<any>;
   columnsToDisplay = ["field", "value"];
   stepper: any;
+  cert: any;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer,
+    private localStorageService: LocalStorageService
   ) {
     this.personalDetailsForm = this.fb.group({
       firstName: ["", Validators.required],
@@ -199,21 +208,33 @@ export class UserRegisterComponent {
   }
 
   getSummaryData() {
+    const dependentsSummary = this.familyDetailsForm.get('dependents')?.value.map((dependent: any, index: number) => ([
+      { field: `Dependent ${index + 1}`, value: dependent.firstName+" "+dependent.lastName+" "+
+                                               " ("+this.getRelationLabel(dependent.relation)+")" },
+
+    ])).flat() || [];
+
+    const serviceCertificationsSummary = this.additionalDetailsForm.get('serviceCertifications')?.value.map((cert: any, index: number) => ([
+      {
+        field: `Service Certificate ${index + 1} Image`,
+        value: this.sanitizer.bypassSecurityTrustUrl(this.getServiceCertificateImage(index)!) // Ensure cert.service_certificate_image is properly sanitized
+      },
+      {
+        field: `Service Certificate ${index + 1} Received Date`,
+        value: cert.date
+      },
+      {
+        field: `Service Certificate ${index + 1} Remarks`,
+        value: cert.remarks
+      }
+    ])).flat() || [];
+
+  
     return [
       {
-        field: "First Name",
-        value: this.personalDetailsForm.get("firstName")?.value,
-      },
-      {
-        field: "Middle Name",
-        value:
-          this.personalDetailsForm.get("middleName")?.value?.trim() !== ""
-            ? this.personalDetailsForm.get("middleName")?.value
-            : "---",
-      },
-      {
-        field: "Last Name",
-        value: this.personalDetailsForm.get("lastName")?.value,
+        field: "Name",
+        value: this.personalDetailsForm.get("firstName")?.value+" "+this.personalDetailsForm.get("middleName")?.value+" "
+              +this.personalDetailsForm.get("lastName")?.value,
       },
       {
         field: "Unique ID",
@@ -313,33 +334,11 @@ export class UserRegisterComponent {
         value: this.bankDetailsForm.get("ppoNumber")?.value,
       },
       {
-        field: "NOK First Name",
-        value: this.familyDetailsForm.get("nextOfKin.firstName")?.value,
+        field: "Next of kin",
+        value: this.familyDetailsForm.get("nextOfKin.firstName")?.value+" "+this.familyDetailsForm.get("nextOfKin.lastName")?.value
+              +" ("+this.getRelationLabel(this.familyDetailsForm.get("nextOfKin.relation")?.value)+")",
       },
-      {
-        field: "NOK Last Name",
-        value: this.familyDetailsForm.get("nextOfKin.lastName")?.value,
-      },
-      {
-        field: "NOK Relation",
-        value: this.familyDetailsForm.get("nextOfKin.relation")?.value == 1
-        ? "Father"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 2
-        ? "Mother"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 3
-        ? "Son"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 4
-        ? "Daughter"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 5
-        ? "Wife"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 6
-        ? "Husband"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 7
-        ? "Brother"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value == 8
-        ? "Sister"
-        : this.familyDetailsForm.get("nextOfKin.relation")?.value,
-      },
+      ...dependentsSummary,
       {
         field: "Canteen Smart Card",
         value: this.additionalDetailsForm.get("canteenSmartCard")?.value,
@@ -348,20 +347,33 @@ export class UserRegisterComponent {
       { field: "COI", value: this.additionalDetailsForm.get("coi")?.value },
       {
         field: "Resident Certificate",
-        value: this.additionalDetailsForm.get("coi")?.value =="No"
-        ? (this.additionalDetailsForm.get("residentCertificate")?.value ? this.additionalDetailsForm.get("residentCertificate")?.value : "---") : "---"
+        value: this.additionalDetailsForm.get("coi")?.value === "No"
+          ? (this.additionalDetailsForm.get("residentCertificate")?.value ? this.additionalDetailsForm.get("residentCertificate")?.value : "---") : "---"
       },
-      
+      ...serviceCertificationsSummary
     ];
   }
+  getRelationLabel(value: number): string {
+    const relation = this.relationOptions.find(option => option.value === value);
+    return relation ? relation.label : value.toString();
+  }
 
-  // value: coiValue === "No" ? (residentCertificateValue ? residentCertificateValue : "---") : "---",
+  getServiceCertificateImage(index: number): string | null {
+    return localStorage.getItem(`service_certificate_image_${index}`);
+  }
+
+  viewImage(imageUrl: any) {
+    const url = imageUrl.changingThisBreaksApplicationSecurity; // Extract the sanitized URL
+    window.open(url, '_blank'); // Open the sanitized URL in a new tab
+  }
 
   onSubmit() {
     if (
       this.personalDetailsForm.valid &&
-      this.serviceDetailsForm.valid &&
-      this.bankDetailsForm.valid
+       this.serviceDetailsForm.valid &&
+       this.bankDetailsForm.valid &&
+        this.familyDetailsForm.valid && // Ensure familyDetailsForm is also valid
+       this.additionalDetailsForm.valid
     ) {
       const formData = {
         Id_ic: this.personalDetailsForm.value.uniqueId,
@@ -400,17 +412,29 @@ export class UserRegisterComponent {
             first_name: this.familyDetailsForm.get("nextOfKin.firstName")?.value,
             last_name: this.familyDetailsForm.get("nextOfKin.lastName")?.value,
             relation: this.familyDetailsForm.get("nextOfKin.relation")?.value,
+            
           }
         ],
-        additionaldetails:
+        additionaldetails:[
           {
             canteen_smart_card: this.additionalDetailsForm.get("canteenSmartCard")?.value,
             echs: this.additionalDetailsForm.get("echs")?.value,
             coi: this.additionalDetailsForm.get("coi")?.value,
             resident_certificate: this.additionalDetailsForm.get("residentCertificate")?.value,
-          }
+          },
+        ],
+        dependentdetails: this.familyDetailsForm.get('dependents')?.value.map((dependent: any) => ({
+          first_name: dependent.firstName,
+          last_name: dependent.lastName,
+          relation: dependent.relation
+        }))
         
+          
+
+
+          
       };
+      console.log(formData);
 
       const url = "http://127.0.0.1:8000/sainikregistration";
       const headers = new HttpHeaders({ "Content-Type": "application/json" });
@@ -486,19 +510,19 @@ export class UserRegisterComponent {
       });
   }
 
-  COIstatusChange(){
+  COIstatusChange() {
     this.additionalDetailsForm.get("coi")?.valueChanges.subscribe((status) => {
-      if (status === "No"){
-        this.showResCert=true;
-        this.additionalDetailsForm.get('residentCertificate')?.setValidators([
-          Validators.required
-        ]);
+      if (status === "No") {
+        this.showResCert = true;
+        this.additionalDetailsForm
+          .get("residentCertificate")
+          ?.setValidators([Validators.required]);
       } else {
-        this.showResCert=false;
+        this.showResCert = false;
         this.personalDetailsForm.get("residentCertificate")?.clearValidators();
         this.personalDetailsForm.get("residentCertificate")?.reset();
       }
-    })
+    });
   }
 
   moveToNextCard() {
@@ -521,9 +545,9 @@ export class UserRegisterComponent {
 
   addDependent() {
     const dependentForm = this.fb.group({
-      firstName: ["", Validators.required],
-      lastName: ["",Validators.required],
-      relation: ["",Validators.required],
+      firstName: [""],
+      lastName: [""],
+      relation: ["", Validators.required],
     });
     this.dependents.push(dependentForm);
   }
@@ -538,20 +562,23 @@ export class UserRegisterComponent {
     }
   }
 
-  markAllAsTouched() {
-    this.familyDetailsForm.markAllAsTouched();
-  }
-
   markAllAsTouchedAndLogDependents() {
-    // this.familyDetailsForm.markAllAsTouched();
     this.logDependentsData();
   }
 
   logDependentsData() {
-    console.log(this.familyDetailsForm.get("dependents")?.value);
+    console.log('demodtatatatatta:',this.familyDetailsForm.get('dependents.firstName')?.value)
+    const dependentsData = this.familyDetailsForm.get("dependents")?.value;
+      if (dependentsData) {
+      dependentsData.forEach((dependent: any) => {
+        const fullName = `${dependent.firstName} ${dependent.lastName} ${this.getRelationLabel(dependent.relation)}`;
+        console.log(fullName);
+      });
+    }
   }
 
-  logAddDetails(){
+
+  logAddDetails() {
     console.log(this.additionalDetailsForm.get("canteenSmartCard")?.value);
     console.log(this.additionalDetailsForm.get("echs")?.value);
     console.log(this.additionalDetailsForm.get("coi")?.value);
@@ -566,9 +593,11 @@ export class UserRegisterComponent {
       this.fb.group({
         service_certificate_date: [""],
         service_certificate_image: [null],
-        service_certificate_remarks:[""]
+        service_certificate_remarks: [""],
+        uniqueId: this.uniqueId,
       })
     );
+    this.uniqueId++;
   }
 
   removeServiceCertification(index: number) {
@@ -583,13 +612,18 @@ export class UserRegisterComponent {
   }
 
   addCivilCertification() {
-    this.civilCertifications.push(
+    const civilCertificationsArray = this.additionalDetailsForm.get(
+      "civilCertifications"
+    ) as FormArray;
+    civilCertificationsArray.push(
       this.fb.group({
-        name: [""],
-        place: [""],
-        date: [""],
+        civil_certificate_date: [""],
+        civil_certificate_image: [null],
+        civil_certificate_remarks: [""],
+        uniqueId: this.uniqueId,
       })
     );
+    this.uniqueId++;
   }
 
   get civilCertifications(): FormArray {
@@ -597,7 +631,10 @@ export class UserRegisterComponent {
   }
 
   removeCivilCertification(index: number) {
-    this.civilCertifications.removeAt(index);
+    const civilCertificationsArray = this.additionalDetailsForm.get(
+      "civilCertifications"
+    ) as FormArray;
+    civilCertificationsArray.removeAt(index);
   }
 
   addAwards() {
@@ -617,48 +654,82 @@ export class UserRegisterComponent {
     this.Awards.removeAt(index);
   }
 
-
-  onDragOver(event: DragEvent) {
+  onDragOver(event: DragEvent, type: "service" | "civil", index: number) {
     event.preventDefault();
     event.stopPropagation();
-    this.dragging = true;
+    if (type === "service") {
+      this.draggingService = index;
+    } else {
+      this.draggingCivil = index;
+    }
   }
 
-  onDragLeave(event: DragEvent) {
+  onDragLeave(event: DragEvent, type: "service" | "civil") {
     event.preventDefault();
     event.stopPropagation();
-    this.dragging = false;
+    if (type === "service") {
+      this.draggingService = null;
+    } else {
+      this.draggingCivil = null;
+    }
   }
 
-  onDrop(event: DragEvent) {
+  onDrop(event: DragEvent, type: "service" | "civil", index: number) {
     event.preventDefault();
     event.stopPropagation();
-    this.dragging = false;
+    if (type === "service") {
+      this.draggingService = null;
+    } else {
+      this.draggingCivil = null;
+    }
     const files = event.dataTransfer!.files;
     if (files.length > 0) {
-      this.additionalDetailsForm.patchValue({ service_certificate_image: files[0] });
-      this.previewFile(files[0]);
+      if (type === "service") {
+        this.additionalDetailsForm
+          .get(["serviceCertifications", index, "service_certificate_image"])
+          ?.setValue(files[0]);
+        this.previewFile(files[0], type, index);
+      } else {
+        this.additionalDetailsForm
+          .get(["civilCertifications", index, "civil_certificate_image"])
+          ?.setValue(files[0]);
+        this.previewFile(files[0], type, index);
+      }
     }
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-        const control = (this.additionalDetailsForm.get('serviceCertifications') as FormArray)
-          .at(event.target.getAttribute('formControlIndex'));
-        control.get('service_certificate_image')?.setValue(file);
-      };
-      reader.readAsDataURL(file);
+  onFileChange(event: Event, type: "service" | "civil", index: number) {
+    const input = event.target as HTMLInputElement;
+    if (input.files!.length > 0) {
+      const file = input.files![0];
+      if (type === "service") {
+        this.additionalDetailsForm
+          .get(["serviceCertifications", index, "service_certificate_image"])
+          ?.setValue(file);
+        this.previewFile(file, type, index);
+      } else {
+        this.additionalDetailsForm
+          .get(["civilCertifications", index, "civil_certificate_image"])
+          ?.setValue(file);
+        this.previewFile(file, type, index);
+      }
     }
   }
+  addbutton(){
+    const imageUrls = Object.values(this.serviceImagePreviews)
+      .filter(value => typeof value === 'string') as string[];
+    localStorage.setItem('serviceImageUrls', JSON.stringify(imageUrls));
+    alert('Images saved to local storage');
+  }
 
-  previewFile(file: File) {
+  previewFile(file: File, type: "service" | "civil", index: number) {
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview = reader.result;
+      if (type === "service") {
+        this.serviceImagePreviews[index] = reader.result;
+      } else {
+        this.civilImagePreviews[index] = reader.result;
+      }
     };
     reader.readAsDataURL(file);
   }

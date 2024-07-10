@@ -29,6 +29,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     console.log('Form Submission Attempted');
+    
     if (this.loginForm.valid) {
       const url = 'http://127.0.0.1:8000/login';
       const body = {
@@ -36,31 +37,32 @@ export class LoginComponent {
         password: this.loginForm.get('password')?.value
       };
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-      this.http.post(url, body, { headers }).subscribe(
+  
+      this.http.post(url, body, { headers,}).subscribe(
         (response: any) => {
           console.log('Login successful', response);
-          
+  
           const authenticatedUser = response.authenticatedUser;
           if (authenticatedUser) {
             const username = authenticatedUser.email;
             const role = authenticatedUser.role;
             const district = authenticatedUser.district;
             const token = authenticatedUser.access;
-
-            
-
-           
+            const refreshtoken = authenticatedUser.refresh;
+  
+            // Store user details and token in localStorage
             localStorage.setItem('username', username);
             localStorage.setItem('userrole', role);
             localStorage.setItem('district', district);
             localStorage.setItem('token', token);
-
-            
+            localStorage.setItem('refresh',refreshtoken)
+  
+            // Navigate to the dashboard on successful login
+            this.router.navigate(['/dashboard']);
+          } else {
+            console.error('Invalid response structure:', response);
+            alert('Login response did not contain the expected data');
           }
-
-          // Navigate to the dashboard on successful login
-          this.router.navigate(['/dashboard']);
         },
         error => {
           console.error('Login failed', error);

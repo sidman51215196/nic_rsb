@@ -201,10 +201,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(ChangePasswordDialogueComponent, {
       width: '400px'
     });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //    Handle dialog close if needed
-    // });
   }
 
 
@@ -251,7 +247,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const url = `http://127.0.0.1:8000/sainikdetailsbyid/${element.Id_ic}`;
     this.http.get<SainikDetails>(url, { headers })
       .pipe(
-        catchError(error => {
+        catchError(error =>{
           console.error('Error fetching details:', error);
           return throwError(error);
         })
