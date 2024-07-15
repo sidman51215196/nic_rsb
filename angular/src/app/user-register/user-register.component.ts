@@ -362,10 +362,20 @@ export class UserRegisterComponent {
     return localStorage.getItem(`service_certificate_image_${index}`);
   }
 
-  viewImage(imageUrl: any) {
-    const url = imageUrl.changingThisBreaksApplicationSecurity; // Extract the sanitized URL
-    window.open(url, '_blank'); // Open the sanitized URL in a new tab
+  viewImages() {
+    const imageUrls = localStorage.getItem('serviceImageUrls');
+    console.log('Retrieved image URLs:', imageUrls);
+    if (imageUrls) {
+      const urls: string[] = JSON.parse(imageUrls);
+      urls.forEach(url => {
+        console.log('Opening URL:', url);
+        window.open(url, '_blank');
+      });
+    } else {
+      alert('No images found in local storage.');
+    }
   }
+  
 
   onSubmit() {
     if (
@@ -716,10 +726,10 @@ export class UserRegisterComponent {
     }
   }
   addbutton(){
-    const imageUrls = Object.values(this.serviceImagePreviews)
-      .filter(value => typeof value === 'string') as string[];
-    localStorage.setItem('serviceImageUrls', JSON.stringify(imageUrls));
-    alert('Images saved to local storage');
+    const imageData = Object.values(this.serviceImagePreviews)
+    .filter(value => typeof value === 'string') as string[];
+  localStorage.setItem('serviceImageUrls', JSON.stringify(imageData));
+  console.log('Image data saved to local storage');
   }
 
   previewFile(file: File, type: "service" | "civil", index: number) {

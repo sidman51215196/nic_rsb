@@ -2,7 +2,7 @@
 header {
   padding: 5px;
   background: rgba(255, 255, 255, 0.1); /* Transparent background */
-  position: fixed; /* Fix the header at the top */
+  /* Fix the header at the top */
   width: 100%;
   z-index: 1000;
   backdrop-filter: blur(20px); /* Optional: add blur effect for better text readability */
