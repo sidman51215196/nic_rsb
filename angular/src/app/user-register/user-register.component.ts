@@ -30,6 +30,21 @@ import { FooterComponent } from "../footer/footer.component";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { LocalStorageService } from "../services/local-storage.service";
 
+interface ImagePreview {
+  image: string | ArrayBuffer | null;
+  date: string;
+  remarks: string;
+}
+interface ServicePreview {
+  image: string | ArrayBuffer | null;
+  date: string;
+  remarks: string;
+}
+interface CivilPreview {
+  image: string | ArrayBuffer | null;
+  date: string;
+  remarks: string;
+}
 @Component({
   selector: "app-user-register",
   templateUrl: "./user-register.component.html",
@@ -58,6 +73,11 @@ import { LocalStorageService } from "../services/local-storage.service";
   ],
 })
 export class UserRegisterComponent {
+ 
+  
+  awarddetails: FormGroup;
+  certificationForm: FormGroup;
+  civilcertificationForm:FormGroup
   personalDetailsForm: FormGroup;
   serviceDetailsForm: FormGroup;
   bankDetailsForm: FormGroup;
@@ -67,11 +87,20 @@ export class UserRegisterComponent {
   totalCards = 5;
   showDateWhenExpired = false;
   showResCert = false;
-  serviceImagePreviews: { [key: number]: string | ArrayBuffer | null } = {};
-  civilImagePreviews: { [key: number]: string | ArrayBuffer | null } = {};
+  selectedFiles: { file: File, awardIndex: number }[] = [];
+  imagePreviews: { image: string, date: string, remarks: string }[] = [];
+  serviceImagePreviews: { image: string, date: string, remarks: string }[] = [];
+  civilImagePreviews: { image: string, date: string, remarks: string }[] = [];
   draggingService: number | null = null;
   draggingCivil: number | null = null;
   uniqueId: number = 0;
+  fileList: File[] = [];
+  base64Strings: string[] = [];
+  base64Images: string[] = [];
+
+  isPreviewVisible = false;
+  isServicePreviewVisible = false;
+  isCivilPreviewVisible = false;
 
   commissionOptions: { value: number; label: string }[] = [
     { value: 1, label: "Commissioned Officer (CO)" },
@@ -113,7 +142,6 @@ export class UserRegisterComponent {
     private fb: FormBuilder,
     private http: HttpClient,
     private router: Router,
-    private sanitizer: DomSanitizer,
     private localStorageService: LocalStorageService
   ) {
     this.personalDetailsForm = this.fb.group({
@@ -122,81 +150,93 @@ export class UserRegisterComponent {
       lastName: ["", Validators.required],
       uniqueId: [
         "",
-        [Validators.required, Validators.pattern("^[a-zA-Z0-9]+$")],
+         ,
       ],
       contactNumber: [
         "",
-        [Validators.required, Validators.pattern("^[0-9]{10}$")],
+        [],
       ],
       aadharNumber: [
         "",
         [
-          Validators.required,
-          Validators.pattern("^[0-9]{4} [0-9]{4} [0-9]{4}$"),
+          
         ],
       ],
-      email: ["", Validators.email],
+      email: ["",],
       dateOfBirth: [
         "",
-        [Validators.required, Validators.pattern("^\\d{4}-\\d{2}-\\d{2}$")],
+        [],
       ],
-      aliveStatus: ["", Validators.required],
+      aliveStatus: ["",],
       dateWhenExpired: [""],
-      district: ["", Validators.required],
+      district: ["",],
       address: this.fb.group({
         address: [""],
       }),
     });
 
     this.serviceDetailsForm = this.fb.group({
-      commission: ["", Validators.required],
-      corps: ["", Validators.required],
+      commission: ["",],
+      corps: ["",],
       dateOfEnrollment: [
         "",
-        [Validators.required, Validators.pattern("^\\d{4}-\\d{2}-\\d{2}$")],
+        [],
       ],
       dateOfRetirement: [
         "",
-        [Validators.required, Validators.pattern("^\\d{4}-\\d{2}-\\d{2}$")],
+        [],
       ],
     });
 
     this.bankDetailsForm = this.fb.group({
       panNumber: [
         "",
-        [Validators.required, Validators.pattern("^[A-Z]{5}[0-9]{4}[A-Z]{1}$")],
+        [],
       ],
       bankName: [""],
       ifscCode: [
         "",
-        [Validators.required, Validators.pattern("^[a-zA-Z0-9]+$")],
+        [],
       ],
-      accountType: ["", Validators.required],
+      accountType: ["",],
       accountNumber: [
         "",
-        [Validators.required, Validators.pattern("^[0-9]+$")],
+        [],
       ],
-      ppoNumber: ["", [Validators.required, Validators.pattern("^[0-9]{12}$")]],
+      ppoNumber: ["", []],
     });
 
     this.familyDetailsForm = this.fb.group({
       nextOfKin: this.fb.group({
         firstName: [""],
         lastName: [""],
-        relation: ["", Validators.required],
+        relation: ["", ],
       }),
       dependents: this.fb.array([]),
     });
+     
+    this.awarddetails = this.fb.group({
+      awards: this.fb.array([])
+    });
+
+    this.certificationForm = this.fb.group({
+      serviceCertifications: this.fb.array([])
+    });
+    
+    this.civilcertificationForm = this.fb.group({
+      civilCertifications: this.fb.array([])
+    });
+  
 
     this.additionalDetailsForm = this.fb.group({
-      canteenSmartCard: ["", Validators.required],
-      echs: ["", Validators.required],
-      coi: ["", Validators.required],
+      canteenSmartCard: ["",],
+      echs: ["",],
+      coi: ["",],
       residentCertificate: [""],
-      date: ["", Validators.pattern("^\\d{4}-\\d{2}-\\d{2}$")],
-      serviceCertifications: this.fb.array([]),
-      civilCertifications: this.fb.array([]),
-      Awards: this.fb.array([]),
+      date: ["",],
+      serviceCertifications: this.certificationForm,  
+      civilCertifications: this.civilcertificationForm,  
+      awards: this.awarddetails,
       remarks: [""],
     });
 
@@ -206,30 +246,8 @@ export class UserRegisterComponent {
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(this.getSummaryData());
   }
-
+ 
   getSummaryData() {
-    const dependentsSummary = this.familyDetailsForm.get('dependents')?.value.map((dependent: any, index: number) => ([
-      { field: `Dependent ${index + 1}`, value: dependent.firstName+" "+dependent.lastName+" "+
-                                               " ("+this.getRelationLabel(dependent.relation)+")" },
-
-    ])).flat() || [];
-
-    const serviceCertificationsSummary = this.additionalDetailsForm.get('serviceCertifications')?.value.map((cert: any, index: number) => ([
-      {
-        field: `Service Certificate ${index + 1} Image`,
-        value: this.sanitizer.bypassSecurityTrustUrl(this.getServiceCertificateImage(index)!) // Ensure cert.service_certificate_image is properly sanitized
-      },
-      {
-        field: `Service Certificate ${index + 1} Received Date`,
-        value: cert.date
-      },
-      {
-        field: `Service Certificate ${index + 1} Remarks`,
-        value: cert.remarks
-      }
-    ])).flat() || [];
-
-  
     return [
       {
         field: "Name",
@@ -334,11 +352,12 @@ export class UserRegisterComponent {
         value: this.bankDetailsForm.get("ppoNumber")?.value,
       },
       {
-        field: "Next of kin",
-        value: this.familyDetailsForm.get("nextOfKin.firstName")?.value+" "+this.familyDetailsForm.get("nextOfKin.lastName")?.value
-              +" ("+this.getRelationLabel(this.familyDetailsForm.get("nextOfKin.relation")?.value)+")",
+        field: "Next of Kin",
+        value: this.familyDetailsForm.get("nextOfKin.firstName")?.value+" "+this.familyDetailsForm.get("nextOfKin.lastName")?.value+" ("+ this.getRelationLabel(
+          this.familyDetailsForm.get("nextOfKin.relation")?.value
+        )+")",
       },
-      ...dependentsSummary,
+      
       {
         field: "Canteen Smart Card",
         value: this.additionalDetailsForm.get("canteenSmartCard")?.value,
@@ -350,41 +369,136 @@ export class UserRegisterComponent {
         value: this.additionalDetailsForm.get("coi")?.value === "No"
           ? (this.additionalDetailsForm.get("residentCertificate")?.value ? this.additionalDetailsForm.get("residentCertificate")?.value : "---") : "---"
       },
-      ...serviceCertificationsSummary
+      
+      
     ];
+  }
+  getPersonalDetails() {
+    const personalDetails = this.getSummaryData().filter(item => {
+      return ['Name', 'Unique ID', 'Contact Number', 'Aadhar Number', 'Email', 'Address', 'District', 'Date of Birth', 'Alive/Expired', 'Date When Expired'].includes(item.field);
+    });
+    return personalDetails;
+  }
+
+  getServiceDetails(){
+    const serviceDetails = this.getSummaryData().filter(item => {
+      return ['Commission', 'Corps', 'Date of Enrollment', 'Date of Retirement'].includes(item.field);
+    });
+    return serviceDetails;
+  }
+
+  getBankDetails(){
+    const bankDetails = this.getSummaryData().filter(item => {
+      return ['PAN Number', 'Bank Name', 'IFSC Code', 'Account Type', 'Account Number', 'PPO Number'].includes(item.field);
+    });
+    return bankDetails;
+  }
+  getFamilyDetails(){
+    const familyDetails = this.getSummaryData().filter(item => {
+      return ['Next of Kin'].includes(item.field);
+    });
+    const dependentsSummary =
+      this.familyDetailsForm
+        .get("dependents")
+        ?.value.map((dependent: any, index: number) => [
+          {
+            field: `Dependent ${index + 1}`,
+            value: dependent.firstName+" "+dependent.lastName+" ("+this.getRelationLabel(dependent.relation)+")"
+          }
+        ])
+        .flat() || [];
+    return [...familyDetails, ...dependentsSummary];
   }
   getRelationLabel(value: number): string {
     const relation = this.relationOptions.find(option => option.value === value);
     return relation ? relation.label : value.toString();
   }
 
-  getServiceCertificateImage(index: number): string | null {
-    return localStorage.getItem(`service_certificate_image_${index}`);
-  }
-
-  viewImages() {
-    const imageUrls = localStorage.getItem('serviceImageUrls');
-    console.log('Retrieved image URLs:', imageUrls);
-    if (imageUrls) {
-      const urls: string[] = JSON.parse(imageUrls);
-      urls.forEach(url => {
-        console.log('Opening URL:', url);
-        window.open(url, '_blank');
+  getAdditionalDetails() {
+    const additionalDetails = [];
+  
+    if (this.additionalDetailsForm) {
+      const additionalData = this.additionalDetailsForm.value;
+      
+      additionalDetails.push({ field: 'Canteen Smart Card', value: additionalData.canteenSmartCard });
+      additionalDetails.push({ field: 'ECHS', value: additionalData.echs });
+      additionalDetails.push({ field: 'COI', value: additionalData.coi });
+      
+      if (this.showResCert) {
+        additionalDetails.push({ field: 'Resident Certificate', value: additionalData.residentCertificate });
+      }
+       this.civilcertificationForm.value.civilCertifications.forEach((civilcert: { date: any; remarks: any; }, index: number) => {
+        additionalDetails.push({ field: `civil Certification ${index + 1} Image`, value: this.civilImagePreviews[index]?.image});
+        additionalDetails.push({ field: `civil Certification ${index + 1} Date`, value: civilcert.date });
+        additionalDetails.push({ field: `civil Certification ${index + 1} Remarks`, value: civilcert.remarks });
       });
-    } else {
-      alert('No images found in local storage.');
+      this.certificationForm.value.serviceCertifications.forEach((cert: { date: any; remarks: any; }, index: number) => {
+        additionalDetails.push({ field: `Service Certification ${index + 1} Image`, value: this.serviceImagePreviews[index]?.image });
+        additionalDetails.push({ field: `Service Certification ${index + 1} Date`, value: cert.date });
+        additionalDetails.push({ field: `Service Certification ${index + 1} Remarks`, value: cert.remarks });
+    });
+      this.awarddetails.value.awards.forEach((award: { date: any; remarks: any; }, index: number) => {
+        additionalDetails.push({ field: `Award ${index + 1} Image`, value: this.imagePreviews[index]?.image });
+        additionalDetails.push({ field: `Award ${index + 1} Date`, value:award.date });
+        additionalDetails.push({ field: `Award ${index + 1} Remarks`, value:award.remarks });
+      });  
+      additionalDetails.push({ field: 'Remarks', value: additionalData.remarks });
     }
+    return additionalDetails;
   }
   
+isImage(value: any): value is SafeUrl {
+  return typeof value === 'string' && (value.startsWith('data:image/') || /\.(jpeg|jpg|gif|png)$/i.test(value));
+}
+ 
 
   onSubmit() {
     if (
       this.personalDetailsForm.valid &&
        this.serviceDetailsForm.valid &&
        this.bankDetailsForm.valid &&
-        this.familyDetailsForm.valid && // Ensure familyDetailsForm is also valid
-       this.additionalDetailsForm.valid
+        this.familyDetailsForm.valid && 
+       this.additionalDetailsForm.valid &&
+       this.civilcertificationForm.valid &&
+       this.certificationForm.valid &&
+       this.awarddetails.valid
     ) {
+ const civildetails = this.civilCertifications.get('civildetails')?.value.map((civil: any) => ({
+  award_image: civil.image,
+  received_date: civil.date,
+  remarks: civil.remarks,
+})) || [];
+
+this.civilcertificationForm.value.civilCertifications.forEach((civilcert: { date: any; remarks: any; }, index: number) => {
+  civildetails.push({
+      award_image: this.civilImagePreviews[index]?.image,
+      received_date: civilcert.date,
+      remarks: civilcert.remarks,
+  });
+}); 
+const servicedetails = this.certificationForm.value.serviceCertifications.map((service: any, index: number) => {
+  const base64String = this.serviceImagePreviews[index]?.image;
+  let binaryData: ArrayBuffer | null = null;
+
+  if (base64String) {
+    console.log('yes basestring')
+    const base64Data = base64String.split(',')[1];
+    console.log(base64Data,'base data ')
+    binaryData = this.base64ToBinary(base64Data);
+    console.log(binaryData,'binary')
+  }
+
+  return {
+    award_image: binaryData,
+    received_date: service.date, 
+    remarks: service.remarks,
+  };
+}) || [];
+
+console.log(servicedetails, 'Service Details');
+
+
+
       const formData = {
         Id_ic: this.personalDetailsForm.value.uniqueId,
         first_name: this.personalDetailsForm.value.firstName,
@@ -433,16 +547,19 @@ export class UserRegisterComponent {
             resident_certificate: this.additionalDetailsForm.get("residentCertificate")?.value,
           },
         ],
+
         dependentdetails: this.familyDetailsForm.get('dependents')?.value.map((dependent: any) => ({
           first_name: dependent.firstName,
           last_name: dependent.lastName,
           relation: dependent.relation
-        }))
+        })) ,
+
+        civildetails: civildetails,
+
+        awarddetails:servicedetails,
+
+        servicedetails:servicedetails,
         
-          
-
-
-          
       };
       console.log(formData);
 
@@ -450,19 +567,19 @@ export class UserRegisterComponent {
       const headers = new HttpHeaders({ "Content-Type": "application/json" });
 
       this.http.post(url, formData, { headers }).subscribe(
+      
         (response) => {
+          console.log(formData,'form demo')
           console.log("Registration successful", response);
           alert("user registration successful");
           this.router.navigate(["/dashboard"]);
-          // Optionally, reset the forms after successful submission
-          // this.personalDetailsForm.reset();
-          // this.serviceDetailsForm.reset();
-          // this.bankDetailsForm.reset();
+          
         },
         (error) => {
+          console.log(formData,'form demo')
           console.error("Registration failed", error);
           alert("registration failed");
-          // Handle error scenarios, such as displaying an error message
+          
         }
       );
     } else {
@@ -571,203 +688,156 @@ export class UserRegisterComponent {
       this.currentCard--;
     }
   }
-
-  markAllAsTouchedAndLogDependents() {
-    this.logDependentsData();
-  }
-
-  logDependentsData() {
-    console.log('demodtatatatatta:',this.familyDetailsForm.get('dependents.firstName')?.value)
-    const dependentsData = this.familyDetailsForm.get("dependents")?.value;
-      if (dependentsData) {
-      dependentsData.forEach((dependent: any) => {
-        const fullName = `${dependent.firstName} ${dependent.lastName} ${this.getRelationLabel(dependent.relation)}`;
-        console.log(fullName);
-      });
-    }
-  }
-
-
-  logAddDetails() {
-    console.log(this.additionalDetailsForm.get("canteenSmartCard")?.value);
-    console.log(this.additionalDetailsForm.get("echs")?.value);
-    console.log(this.additionalDetailsForm.get("coi")?.value);
-    console.log(this.additionalDetailsForm.get("residentCertificate")?.value);
-  }
-
   addServiceCertification() {
-    const serviceCertificationsArray = this.additionalDetailsForm.get(
-      "serviceCertifications"
-    ) as FormArray;
-    serviceCertificationsArray.push(
+    this.serviceCertifications.push(
       this.fb.group({
-        service_certificate_date: [""],
-        service_certificate_image: [null],
-        service_certificate_remarks: [""],
-        uniqueId: this.uniqueId,
+        date: [''],
+        remarks: [''],
+        image: ['']    
       })
     );
-    this.uniqueId++;
   }
-
-  removeServiceCertification(index: number) {
-    const serviceCertificationsArray = this.additionalDetailsForm.get(
-      "serviceCertifications"
-    ) as FormArray;
-    serviceCertificationsArray.removeAt(index);
-  }
-
-  get serviceCertifications(): FormArray {
-    return this.additionalDetailsForm.get("serviceCertifications") as FormArray;
-  }
-
-  addCivilCertification() {
-    const civilCertificationsArray = this.additionalDetailsForm.get(
-      "civilCertifications"
-    ) as FormArray;
-    civilCertificationsArray.push(
+addCivilCertification(){
+    this.civilCertifications.push(
       this.fb.group({
-        civil_certificate_date: [""],
-        civil_certificate_image: [null],
-        civil_certificate_remarks: [""],
-        uniqueId: this.uniqueId,
-      })
-    );
-    this.uniqueId++;
-  }
-
-  get civilCertifications(): FormArray {
-    return this.additionalDetailsForm.get("civilCertifications") as FormArray;
-  }
-
-  removeCivilCertification(index: number) {
-    const civilCertificationsArray = this.additionalDetailsForm.get(
-      "civilCertifications"
-    ) as FormArray;
-    civilCertificationsArray.removeAt(index);
-  }
-
-  addAwards() {
-    this.Awards.push(
-      this.fb.group({
-        name: [""],
         date: [""],
+        remarks: [""],
+        image: [""]
+    }))
+  }
+addAwards() {
+    this.awards.push(
+      this.fb.group({
+        date: [""],
+        remarks: [""],
+        image: [""]
       })
     );
   }
 
-  get Awards(): FormArray {
-    return this.additionalDetailsForm.get("Awards") as FormArray;
+get serviceCertifications(): FormArray {
+    return this.certificationForm.get("serviceCertifications") as FormArray;
   }
-
-  removeAward(index: number) {
-    this.Awards.removeAt(index);
+get civilCertifications(): FormArray {
+    return this.civilcertificationForm.get("civilCertifications") as FormArray;
   }
-
-  onDragOver(event: DragEvent, type: "service" | "civil", index: number) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (type === "service") {
-      this.draggingService = index;
+get awards(): FormArray {
+    return this.awarddetails.get('awards') as FormArray;
+  }
+ 
+  handleFileChange(event: any, index: number, array: FormArray, previewArray: any[]) {
+    const file = event.target.files[0];
+    console.log(array, 'Form Array'); // Debug log to check array
+    console.log(index, 'Index'); // Debug log to check index
+    if (!array || !array.at) {
+      console.error('Invalid FormArray or FormArray is not defined correctly.');
+      return;
+    }
+    if (file && array.length > index && array.at(index)) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        previewArray[index] = {
+          image: e.target.result,
+          date: array.at(index).get('date')?.value,
+          remarks: array.at(index).get('remarks')?.value
+        };
+        console.log(previewArray[index], 'Updated Preview');
+      };
+      reader.readAsDataURL(file);
     } else {
-      this.draggingCivil = index;
+      console.error('Invalid index or array is not properly defined.');
     }
   }
-
-  onDragLeave(event: DragEvent, type: "service" | "civil") {
-    event.preventDefault();
-    event.stopPropagation();
-    if (type === "service") {
-      this.draggingService = null;
-    } else {
-      this.draggingCivil = null;
-    }
+  onFileChange(event: any, index: number) {
+    this.handleFileChange(event, index, this.serviceCertifications, this.serviceImagePreviews);
   }
 
-  onDrop(event: DragEvent, type: "service" | "civil", index: number) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (type === "service") {
-      this.draggingService = null;
-    } else {
-      this.draggingCivil = null;
-    }
-    const files = event.dataTransfer!.files;
-    if (files.length > 0) {
-      if (type === "service") {
-        this.additionalDetailsForm
-          .get(["serviceCertifications", index, "service_certificate_image"])
-          ?.setValue(files[0]);
-        this.previewFile(files[0], type, index);
+  base64ToBinary = (base64Data: string): ArrayBuffer | null => {
+  const dataUriRegex = /^data:(.+);base64,(.*)$/;
+  const match = base64Data.match(dataUriRegex);
+
+  let base64String: string;
+  
+  if (match) {
+    // It's a data URI, extract base64 data
+    base64String = match[2];
+  } else {
+    // Regular Base64 string
+    base64String = base64Data;
+  }
+
+  // Convert base64 string to binary data
+  const binaryString = atob(base64String);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+};
+  onCivilFileChange(event: any, index: number) {
+    this.handleFileChange(event, index, this.civilCertifications, this.civilImagePreviews);
+  }
+  
+  onFilesSelected(event: any, index: number) {
+    this.handleFileChange(event, index, this.awards, this.imagePreviews);
+  }
+  updatePreviews(formArray: FormArray, previewArray: any[]): any[] {
+    return formArray.value.map((item: { date: string; remarks: string; }, index: number) => ({
+        image: previewArray[index]?.image || '',
+        date: item.date,
+        remarks: item.remarks
+    }));
+}
+
+showPreview() {
+    this.imagePreviews = this.updatePreviews(this.awarddetails.get('awards') as FormArray, this.imagePreviews);
+    this.isPreviewVisible = true;
+}
+showServicePreview() {
+    this.serviceImagePreviews = this.updatePreviews(this.certificationForm.get('serviceCertifications') as FormArray, this.serviceImagePreviews);
+    this.isServicePreviewVisible = true;
+  }
+showCivilPreview() {
+    this.civilImagePreviews = this.updatePreviews(this.civilcertificationForm.get('civilCertifications') as FormArray, this.civilImagePreviews);
+    this.isCivilPreviewVisible = true;
+  }
+openPreviewInNewTab(preview: { image: string | ArrayBuffer | null; date: string; remarks: string }): void {
+    if (preview.image) {
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.body.innerHTML = `
+          <p>Date: ${preview.date}</p>
+          <p>Remarks: ${preview.remarks}</p>
+          <img src="${preview.image}" alt="Image Preview" style="width: 100%;">
+        `;
       } else {
-        this.additionalDetailsForm
-          .get(["civilCertifications", index, "civil_certificate_image"])
-          ?.setValue(files[0]);
-        this.previewFile(files[0], type, index);
+        console.error('Failed to open new tab');
       }
     }
   }
-
-  onFileChange(event: Event, type: "service" | "civil", index: number) {
-    const input = event.target as HTMLInputElement;
-    if (input.files!.length > 0) {
-      const file = input.files![0];
-      if (type === "service") {
-        this.additionalDetailsForm
-          .get(["serviceCertifications", index, "service_certificate_image"])
-          ?.setValue(file);
-        this.previewFile(file, type, index);
-      } else {
-        this.additionalDetailsForm
-          .get(["civilCertifications", index, "civil_certificate_image"])
-          ?.setValue(file);
-        this.previewFile(file, type, index);
-      }
-    }
-  }
-  addbutton(){
-    const imageData = Object.values(this.serviceImagePreviews)
-    .filter(value => typeof value === 'string') as string[];
-  localStorage.setItem('serviceImageUrls', JSON.stringify(imageData));
-  console.log('Image data saved to local storage');
+openInNewTab(preview: ImagePreview): void {
+    this.openPreviewInNewTab(preview);
   }
 
-  previewFile(file: File, type: "service" | "civil", index: number) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (type === "service") {
-        this.serviceImagePreviews[index] = reader.result;
-      } else {
-        this.civilImagePreviews[index] = reader.result;
-      }
-    };
-    reader.readAsDataURL(file);
+openCivilInNewTab(preview: CivilPreview): void {
+    this.openPreviewInNewTab(preview);
+  } 
+removeItem(index: number, formArray: FormArray, previewArray: any[]): void {
+    formArray.removeAt(index);
+    previewArray.splice(index, 1);
+  } 
+removeAward(index: number) {
+    this.removeItem(index, this.awards, this.imagePreviews);
   }
+  
+removeService(index: number) {
+    this.removeItem(index, this.serviceCertifications, this.serviceImagePreviews);
+  }
+  
+removeCivil(index: number) {
+    this.removeItem(index, this.civilCertifications, this.civilImagePreviews);
+  }
+  
 
-  // submitCard(cardNumber: number) {
-  //   switch (cardNumber) {
-  //     case 1:
-  //       if (this.personalDetailsForm.valid)this.moveToNextCard();
-  //       break;
-  //     case 2:
-  //       if (this.serviceDetailsForm.valid) this.moveToNextCard();
-  //       break;
-  //     case 3:
-  //       if (this.bankDetailsForm.valid)this.moveToNextCard();
-  //       break;
-  //       case 4:
-  //         if (this.familyDetailsForm.valid) {
-  //           console.log('Family Details Form is valid');
-  //           this.moveToNextCard();
-  //         } else {
-  //           console.log('Family Details Form is invalid');
-  //         }
-  //         break;
-  //     case 5:
-  //       if (this.additionalDetailsForm.valid) this.onSubmit();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
 }

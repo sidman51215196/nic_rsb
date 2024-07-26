@@ -1,18 +1,20 @@
 import { inject } from '@angular/core';
-import { CanActivateFn,Router } from '@angular/router';
-
-export const authGuard: CanActivateFn = (route, state) => {
+import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 
 
-  const router = inject(Router)
-  const localstoragedata = localStorage.getItem('token');
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state) => {
+  const router = inject(Router);
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userrole');
 
-  if(localstoragedata != null){
+  if (token) {
+    if (route.url.toString() === 'register' && userRole !== '1') {
+      router.navigateByUrl('/unauthorized'); 
+      return false;
+    }
     return true;
-    
-  }else{
+  } else {
     router.navigateByUrl('/login');
     return false;
   }
-  
 };
