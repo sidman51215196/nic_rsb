@@ -576,7 +576,7 @@
                       <img [src]="preview.image" alt="Image Preview" width="200" />
                       <p>Date: {{ preview.date }}</p>
                       <p>Remarks: {{ preview.remarks }}</p>
-                      <button>Open Image New Tab</button>
+                      <button (click)="openService(preview)">Open Image New Tab</button>
                     </div>
                   </div>
                 </div>

@@ -91,12 +91,9 @@ export class UserRegisterComponent {
   imagePreviews: { image: string, date: string, remarks: string }[] = [];
   serviceImagePreviews: { image: string, date: string, remarks: string }[] = [];
   civilImagePreviews: { image: string, date: string, remarks: string }[] = [];
-  draggingService: number | null = null;
-  draggingCivil: number | null = null;
   uniqueId: number = 0;
-  fileList: File[] = [];
-  base64Strings: string[] = [];
-  base64Images: string[] = [];
+
+ 
 
   isPreviewVisible = false;
   isServicePreviewVisible = false;
@@ -450,7 +447,14 @@ export class UserRegisterComponent {
 isImage(value: any): value is SafeUrl {
   return typeof value === 'string' && (value.startsWith('data:image/') || /\.(jpeg|jpg|gif|png)$/i.test(value));
 }
- 
+fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+};
 
   onSubmit() {
     if (
@@ -463,37 +467,29 @@ isImage(value: any): value is SafeUrl {
        this.certificationForm.valid &&
        this.awarddetails.valid
     ) {
- const civildetails = this.civilCertifications.get('civildetails')?.value.map((civil: any) => ({
-  award_image: civil.image,
-  received_date: civil.date,
-  remarks: civil.remarks,
-})) || [];
+ 
 
-this.civilcertificationForm.value.civilCertifications.forEach((civilcert: { date: any; remarks: any; }, index: number) => {
-  civildetails.push({
+const civildetails = this.civilcertificationForm.value.civilCertifications.map((civilcert: any,index: number) => ({
+  
       award_image: this.civilImagePreviews[index]?.image,
       received_date: civilcert.date,
       remarks: civilcert.remarks,
-  });
-}); 
-const servicedetails = this.certificationForm.value.serviceCertifications.map((service: any, index: number) => {
-  const base64String = this.serviceImagePreviews[index]?.image;
-  let binaryData: ArrayBuffer | null = null;
+  })) || [];
+ 
+const servicedetails = this.certificationForm.value.serviceCertifications.map((service: any, index: number) => ({
+  award_image: this.serviceImagePreviews[index]?.image,
+  received_date: service.date,
+  remarks: service.remarks,
+})) || [];
 
-  if (base64String) {
-    console.log('yes basestring')
-    const base64Data = base64String.split(',')[1];
-    console.log(base64Data,'base data ')
-    binaryData = this.base64ToBinary(base64Data);
-    console.log(binaryData,'binary')
-  }
+const awarddetails = this.awarddetails.value.awards.map((award: any, index: number) =>
+({
+  award_image: this.imagePreviews[index]?.image,
+  recieved_date:award.date,
+  remarks: award.remarks
+}))
 
-  return {
-    award_image: binaryData,
-    received_date: service.date, 
-    remarks: service.remarks,
-  };
-}) || [];
+  
 
 console.log(servicedetails, 'Service Details');
 
@@ -556,7 +552,7 @@ console.log(servicedetails, 'Service Details');
 
         civildetails: civildetails,
 
-        awarddetails:servicedetails,
+        awarddetails:awarddetails,
 
         servicedetails:servicedetails,
         
@@ -752,29 +748,6 @@ get awards(): FormArray {
     this.handleFileChange(event, index, this.serviceCertifications, this.serviceImagePreviews);
   }
 
-  base64ToBinary = (base64Data: string): ArrayBuffer | null => {
-  const dataUriRegex = /^data:(.+);base64,(.*)$/;
-  const match = base64Data.match(dataUriRegex);
-
-  let base64String: string;
-  
-  if (match) {
-    // It's a data URI, extract base64 data
-    base64String = match[2];
-  } else {
-    // Regular Base64 string
-    base64String = base64Data;
-  }
-
-  // Convert base64 string to binary data
-  const binaryString = atob(base64String);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes.buffer;
-};
   onCivilFileChange(event: any, index: number) {
     this.handleFileChange(event, index, this.civilCertifications, this.civilImagePreviews);
   }
@@ -818,6 +791,10 @@ openPreviewInNewTab(preview: { image: string | ArrayBuffer | null; date: string;
   }
 openInNewTab(preview: ImagePreview): void {
     this.openPreviewInNewTab(preview);
+  }
+  openService(preview:ServicePreview):void{
+    this.openPreviewInNewTab(preview);
+
   }
 
 openCivilInNewTab(preview: CivilPreview): void {
