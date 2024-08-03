@@ -1,28 +1,41 @@
 <header>
     <div class="container">
-        <div class="row align-items-center"> <!-- Added align-items-center for vertical alignment -->
-            <div class="col-md-3 col-sm-3 col-3 d-flex  align-items-center">
+        <div class="header">
+            <div class="logo-container">
                 <div class="logo">
                     <a routerLink="/"><img src="assets/Seal_of_Sikkim_greyscale.png" class="logo-img" alt=""></a>
                 </div>
-                <div class="logo-text ms-2"> <!-- Added a div for the text and margin for spacing -->
-                    <strong>Rajya Sainik Board,<br> Govt. of Sikkim.</strong>
+                <div class="logo-text ">
+                    <strong>
+                        <div class="logo-text2">Rajya Sainik Board</div>
+                        <div class="logo-text2">Govt. of Sikkim</div>
+                    </strong>
                 </div>
             </div>
-            <div class="col-md-9 col-sm-9 col-9 text-end">
-                <div class="menu-icon" (click)="openMenu()">
-                    <i class="{{menu_icon}}"></i>
-                </div>
-                <div class="desktop_menu" [class.mobile_menu]="menuValue">
+            <div class="menu-container">
+                <div class="desktop_menu">
                     <ul> 
-                        <li (click)="closeMenu()"><a routerLink="/">Home</a></li>
-                        <li (click)="closeMenu()"><a routerLink="/about">About</a></li>
-                        <li (click)="closeMenu()"><a routerLink="/contact">Contact</a></li>
-                        <li (click)="closeMenu()"><a routerLink="/login">Login</a></li>
-                        <!-- <li (click)="closeMenu()"><a routerLink="/register">Register</a></li> -->
+                        <li (click)="closeMenu()"><a routerLink="/"><div class="btn">Home</div></a></li>
+                        <li (click)="closeMenu()"><a routerLink="/about"><div class="btn">About</div></a></li>
+                        <li (click)="closeMenu()"><a routerLink="/contact"><div class="btn">Contact</div></a></li>
+                        <li *ngIf="!isLoggedIn" (click)="closeMenu()"><a routerLink="/login"><div class="btn">Login</div></a></li>
+                        <li *ngIf="isLoggedIn" (click)="closeMenu()" ><a routerLink="/dashboard"><div class="btn">Dashboard</div></a></li>
+                        <li *ngIf="isLoggedIn" (click)="logout($event); closeMenu()" ><div class="btn">Logout</div></li>
                     </ul>
+                </div>
+                <div class="menu-icon" (click)="toggleMenu()">
+                    &#9776; <!-- Hamburger Icon -->
                 </div>
             </div>
         </div>
+    </div>
+    <div class="mobile_menu" [ngClass]="{'show': isMenuOpen}">
+        <ul> 
+            <li (click)="closeMenu()"><a routerLink="/">Home</a></li>
+            <li (click)="closeMenu()"><a routerLink="/about">About</a></li>
+            <li (click)="closeMenu()"><a routerLink="/contact">Contact</a></li>
+            <li *ngIf="!isLoggedIn" (click)="closeMenu()"><a routerLink="/login">Login</a></li>
+            <li *ngIf="isLoggedIn" (click)="logout($event); closeMenu()"><a routerLink="/">Logout</a></li>
+        </ul>
     </div>
 </header>

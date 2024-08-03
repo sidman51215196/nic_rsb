@@ -19,7 +19,6 @@ export class LoginComponent {
     private fb: FormBuilder, 
     private router: Router, 
     private http: HttpClient,
-    // Correct injection of AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

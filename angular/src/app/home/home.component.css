@@ -1,13 +1,15 @@
+.space {
+  margin: 10px;
+}
+
 .home-container {
   position: relative;
   height: 100vh;
-  
   background-image: url('/assets/background.jpeg'); 
   background-size: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -17,24 +19,64 @@
 }
       
 .centered-text {
-  max-width: 1200px;
+  margin-top: 20px;
+  max-width: 95%;
   background: rgba(0, 0, 0, 0.679); /* added a semi-transparent background for better text visibility */
-  padding: 80px;
+  padding: 40px;
   border-radius: 10px;
 }
 
-.inside-content{
+.inside-content {
   text-align: justify;
 }
-.row{
-  width:400px;
-  height:300px
+
+.two-column {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  padding: 40px;
 }
-.chart-container {
+
+.centered-text2 {
+  flex: 1; /* Make the columns take up equal space */
+  background: rgba(0, 0, 0, 0.679); 
+  padding: 40px;
+  border-radius: 10px;
+  width: 45%; /* Ensure the columns don't take up more than 45% each */
+}
+
+.inside-content2 {
   text-align: center;
 }
 
-.chart-label {
-  margin-top: 10px;
-  font-size: 18px;
+/* Responsive styles */
+@media (max-width: 700px) {
+  .home-container {
+    height: 100%;
+    min-height: 100vh;
+  }
+
+  .centered-text{
+    width: 90%;
+    margin: 10px auto;
+  }
+
+  .centered-text2{
+    width: 100%;
+  }
+
+  .centered-text h1 {
+    font-size: 1.5em;
+  }
+
+  .inside-content, .inside-content2 {
+    font-size: 0.9em;
+  }
+
+  .two-column {
+    flex-direction: column;
+    width: 100%;
+  }
 }
+

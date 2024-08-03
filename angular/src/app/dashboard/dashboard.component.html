@@ -1,10 +1,10 @@
 <div class="dash-entire">
-  <header class="app-header">
-    <app-header2></app-header2>
+  <!-- <button (click)="toggleHeader()">Toggle Header</button> -->
+  <header class="app-header" >
+    <app-header></app-header>
   </header>
-
   <div class="dash-container">
-    <mat-toolbar color="primary">
+    <mat-toolbar class="nav-bar">
       <mat-toolbar-row>
         <!-- Button to toggle the sidenav -->
         <button mat-icon-button (click)="sidenav.toggle()">
@@ -21,18 +21,42 @@
         <mat-nav-list>
           <div class="menu">
           <!-- Navigation items inside the sidenav with href attributes -->
-          <a class="nav-item" mat-list-item href="/home">Home</a>
-          <a class="nav-item" mat-list-item href="/about">About</a>
-          <a *ngIf="userRole === 1" class="nav-item" mat-list-item href="/register">Register</a>
-          <a *ngIf="userRole === 2" class="nav-item"  mat-list-item href="/user-register">User Register</a>
-          
-          <a class="nav-item" mat-list-item href="/update-profile">Update Profile</a>
-          <a class="nav-item" mat-list-item (click)="showProfile()">Admin Profile</a>
+          <a class="nav-item " mat-list-item href="/home">
+            <div class="side-nav-options">
+              <mat-icon class="nav-icons">home</mat-icon> Home
+            </div>
+          </a>
+          <a class="nav-item" mat-list-item href="/about">
+            <div class="side-nav-options">
+              <mat-icon>info</mat-icon> About
+            </div>
+          </a>
+          <a *ngIf="userRole === 1" class="nav-item" mat-list-item href="/register">
+            <div class="side-nav-options">
+              <mat-icon>person_add</mat-icon> Register
+            </div>
+          </a>
+          <a *ngIf="userRole === 2" class="nav-item"  mat-list-item href="/user-register">
+            <div class="side-nav-options">
+              <mat-icon>group_add</mat-icon> User Register
+            </div>
+          </a>
+          <a class="nav-item" mat-list-item >
+            <div class="side-nav-options">
+              <mat-icon>edit</mat-icon> Update Profile
+            </div>
+          </a>
+          <a *ngIf="userRole === 2" class="nav-item" mat-list-item (click)="showProfile()" >
+            <div class="side-nav-options" >
+              <mat-icon>account_circle</mat-icon> Admin Profile
+            </div>
+          </a>
         </div>
         </mat-nav-list>
       </mat-sidenav>
 <mat-sidenav-content class="center-content">
-  <div class="main-content" *ngIf="mainContent">
+  <div class="content-wrapper" *ngIf="mainContent ">
+  <div class="main-content">
     <div class="filter-section">
       <mat-form-field>
         <mat-icon matPrefix>search</mat-icon>
@@ -40,7 +64,7 @@
         <input matInput (keyup)="applyFilter($event)" placeholder="search">
       </mat-form-field>
     </div>
-
+    <div class="table-container">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="slNo">
         <th mat-header-cell *matHeaderCellDef> No. </th>
@@ -75,218 +99,242 @@
       <ng-container matColumnDef="view">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let element">
-          <button mat-button (click)="viewDetails(element)">View</button>
+          <button *ngIf="!editMode" mat-button (click)="viewDetails(element)">View</button>
         </td>
-      </ng-container> 
+      </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row"></tr>
     </table>
-
     <mat-paginator [length]="totalRecords"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
                    (page)="pageChanged($event)">
-    </mat-paginator>
+    </mat-paginator>  
+  </div>
+    
+  </div>
+</div>
+
+
+<!-- update profile, i.e, edit mode -->
+  <div class="content-wrapper" *ngIf="editMode">
+    <div class="main-content">
+      <div class="filter-section">
+        <mat-form-field>
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-label>search</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="search">
+        </mat-form-field>
+      </div>
+      <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="slNo">
+          <th mat-header-cell *matHeaderCellDef> No. </th>
+          <td mat-cell *matCellDef="let element; let i = index"> {{ i + 1 }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let element"> {{ element.first_name }} {{ element.last_name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="uid">
+          <th mat-header-cell *matHeaderCellDef> UID </th>
+          <td mat-cell *matCellDef="let element"> {{ element.Id_ic }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef> Address </th>
+          <td mat-cell *matCellDef="let element"> {{ element.address }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dob">
+          <th mat-header-cell *matHeaderCellDef> Date of Birth </th>
+          <td mat-cell *matCellDef="let element"> {{ element.date_of_birth | date }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="corps">
+          <th mat-header-cell *matHeaderCellDef> Corps </th>
+          <td mat-cell *matCellDef="let element"> {{ element.service_details_corps }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="view">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-button (click)="openEditDetails(element)">Edit</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row"></tr>
+      </table>
+      </div>
+      <mat-paginator [length]="totalRecords"
+                    [pageSize]="pageSize"
+                    [pageSizeOptions]="pageSizeOptions"
+                    (page)="pageChanged($event)">
+      </mat-paginator>
+    </div>
   </div>
 
-  <!-- <div *ngIf="displaydetails == true" class="details-container">
-    <mat-grid-list cols="3" class="details-inside-container" >
-
-
-      <mat-grid-tile>
-        <mat-card >
-          <div class="personal-display">
-        
-          <mat-card-header >
-            <mat-card-title>Personal Details</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="test">
-            <form [formGroup]="personalDetailsForm">
-              <table mat-table [dataSource]="personalDetails" class="personal-table">
-                <ng-container matColumnDef="field" >
-                  <th mat-header-cell *matHeaderCellDef>Field</th>
-                  <td mat-cell *matCellDef="let element">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef>Value</th>
-                  <td mat-cell *matCellDef="let element">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </div>
-        </mat-card>
-      </mat-grid-tile>
-
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Service Details</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <form [formGroup]="serviceDetailsForm">
-              <table mat-table [dataSource]="serviceDetails" class="mat-elevation-z8">
-                <ng-container matColumnDef="field">
-                  <th mat-header-cell *matHeaderCellDef>Field</th>
-                  <td mat-cell *matCellDef="let element">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef>Value</th>
-                  <td mat-cell *matCellDef="let element">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Bank Details</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <form [formGroup]="bankDetailsForm">
-              <table mat-table [dataSource]="bankDetails" class="mat-elevation-z8">
-                <ng-container matColumnDef="field">
-                  <th mat-header-cell *matHeaderCellDef>Field</th>
-                  <td mat-cell *matCellDef="let element">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef>Value</th>
-                  <td mat-cell *matCellDef="let element">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
-  </div> -->
-
-  <div class="dashboard-content">
-    <!-- <mat-card class="profile">
-    <mat-card-content> -->
-    <div class="profile-container" *ngIf="showProfileDetails">
-      <h2 class="center-title3">Profile Information</h2>
-      <div class="profile-details">
-        <div class="profile-row">
-          <div class="profile-label">Email:</div>
-          <div class="profile-value">{{ profileData?.email }}</div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-label">Role: </div>
-          <div class="profile-value">{{ getRoleName(profileData?.role) }}</div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-label">District:</div> 
-          <div class="profile-value">{{ getDistrictName(profileData?.district) }}</div>
-        </div>
-        <div class="space"></div>
-            <!-- Back Button -->
-            <button mat-raised-button color="primary" (click)="openChangePasswordDialog()" class="middle">Change Password</button>
-        <div class="space"></div>
-            <!-- Back Button -->
-            <button mat-raised-button color="primary" (click)="goBack()" class="middle">Back</button>
+  <!-- admin-profile details -->
+<div class="profile-dash-content" >
+  <div class="profile-container" *ngIf="showProfileDetails">
+    <h2 class="center-title3">Profile Information</h2>
+    <div class="profile-details" >
+      <div class="profile-row" >
+        <div class="profile-label">Email:</div>
+        <div class="profile-value">{{ profileData?.email }}</div>
       </div>
+      <div class="profile-row">
+        <div class="profile-label">Role: </div>
+        <div class="profile-value">{{ getRoleName(profileData?.role) }}</div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-label">District:</div>
+        <div class="profile-value">{{ getDistrictName(profileData?.district) }}</div>
+      </div>
+      <div class="space"></div>
+      <button mat-raised-button color="primary" (click)="openChangePasswordDialog()" class="middle">Change Password</button>
+      <div class="space"></div>
+      <button mat-raised-button color="primary" (click)="goBack()" class="middle">Back</button>
     </div>
-    <!-- </mat-card-content>
-  </mat-card> -->
   </div>
-  
+</div>
 
-
-
-    <div *ngIf="displaydetails == true" class="details-container">
-      <div>
-        <mat-card >
-          <mat-card-header>
-            <div class="center-title2">
-            <mat-card-title class="center-title">Personal Details</mat-card-title>
-          </div>
-          </mat-card-header>
-          <mat-card-content class="test">
-            <form [formGroup]="personalDetailsForm">
-              <table mat-table [dataSource]="personalDetails" class="personal-table">
-                <ng-container matColumnDef="field">
-                  <th mat-header-cell *matHeaderCellDef class="center-align ">Field</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef class="center-align ">Value</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </mat-card>
-        <div class="space"></div>
-        <mat-card >
-          <mat-card-header>
-            <div class="center-title2">
-              <mat-card-title class="center-title">Service Details</mat-card-title>
-            </div>
-          </mat-card-header>
-          <mat-card-content class="test">
-            <form [formGroup]="serviceDetailsForm">
-              <table mat-table [dataSource]="serviceDetails" class="personal-table">
-                <ng-container matColumnDef="field">
-                  <th mat-header-cell *matHeaderCellDef class="center-align ">Field</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef class="center-align ">Value</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </mat-card>
-        <div class="space"></div>
-        <mat-card >
-          <mat-card-header>
-            <div class="center-title2">
-              <mat-card-title class="center-title">Bank Details</mat-card-title>
-            </div>
-          </mat-card-header>
-          <mat-card-content class="test">
-            <form [formGroup]="bankDetailsForm">
-              <table mat-table [dataSource]="bankDetails" class="personal-table">
-                <ng-container matColumnDef="field">
-                  <th mat-header-cell *matHeaderCellDef class="center-align">Field</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
-                </ng-container>
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef class="center-align">Value</th>
-                  <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
-              </table>
-            </form>
-          </mat-card-content>
-        </mat-card>
-        <div class="space"></div>
-            <!-- Back Button -->
-            <button mat-raised-button color="primary" (click)="goBack()" class="middle">Back</button>
+<!-- View -->
+<div *ngIf="displaydetails == true" class="details-container">
+  <div >
+    <mat-card >
+      <mat-card-header>
+        <div class="center-title2">
+        <mat-card-title class="center-title">Personal Details</mat-card-title>
       </div>
-    </div>
+      </mat-card-header>
+      <mat-card-content class="test">
+        <form [formGroup]="personalDetailsForm">
+          <table mat-table [dataSource]="personalDetails" class="personal-table">
+            <ng-container matColumnDef="field">
+              <th mat-header-cell *matHeaderCellDef class="center-align ">Field</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef class="center-align ">Value</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails"></tr>
+          </table>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <div class="space"></div>
+    <mat-card >
+      <mat-card-header>
+        <div class="center-title2">
+          <mat-card-title class="center-title">Service Details</mat-card-title>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="test">
+        <form [formGroup]="serviceDetailsForm">
+          <table mat-table [dataSource]="serviceDetails" class="personal-table">
+            <ng-container matColumnDef="field">
+              <th mat-header-cell *matHeaderCellDef class="center-align ">Field</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef class="center-align ">Value</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
+          </table>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <div class="space"></div>
+    <mat-card >
+      <mat-card-header>
+        <div class="center-title2">
+          <mat-card-title class="center-title">Bank Details</mat-card-title>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="test">
+        <form [formGroup]="bankDetailsForm">
+          <table mat-table [dataSource]="bankDetails" class="personal-table">
+            <ng-container matColumnDef="field">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Field</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Value</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
+          </table>
+        </form>
+      </mat-card-content>
+    </mat-card>
 
+    <div class="space"></div>
+    <mat-card >
+      <mat-card-header>
+        <div class="center-title2">
+          <mat-card-title class="center-title">Family Details</mat-card-title>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="test">
+        <form [formGroup]="familyDetailsForm">
+          <table mat-table [dataSource]="familyDetails" class="personal-table">
+            <ng-container matColumnDef="field">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Field</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Value</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
+          </table>
+        </form>
+      </mat-card-content>
+    </mat-card>
 
+    <div class="space"></div>
+    <mat-card >
+      <mat-card-header>
+        <div class="center-title2">
+          <mat-card-title class="center-title">Additional Details</mat-card-title>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="test">
+        <form [formGroup]="additionalDetailsForm">
+          <table mat-table [dataSource]="additionalDetails" class="personal-table">
+            <ng-container matColumnDef="field">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Field</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.field}}</td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef class="center-align">Value</th>
+              <td mat-cell *matCellDef="let element" class="center-align">{{element.value}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDetails" class="header-cell"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsDetails;"></tr>
+          </table>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="space"></div>
+        <!-- Back Button -->
+        <button mat-raised-button color="primary" (click)="goBack()" class="middle">Back</button>
+  </div>
+</div>
 </mat-sidenav-content>
 </mat-sidenav-container>
 </div>
-
   <app-footer></app-footer>
 </div>

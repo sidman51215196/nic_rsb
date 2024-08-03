@@ -1,16 +1,15 @@
-<div class="reg-header">
-  <header>
-    <app-header3></app-header3>
-  </header>
-</div>
-<div class="large-space"></div>
+<app-header3></app-header3>
+  
 
 <div class="parent-cardcontainer">
   <mat-stepper class="full-screen custom-stepper" #stepper linear>
     <!-- Personal Details Form Step -->
     <mat-step [stepControl]="personalDetailsForm">
+      <div class="form-height">
       <form [formGroup]="personalDetailsForm" class="card-container">
-        <ng-template matStepLabel>Personal Details</ng-template>
+        <!-- <ng-template matStepLabel>Personal Details</ng-template> -->
+        <ng-template matStepLabel *ngIf="!isSmallScreen">Personal Details</ng-template>
+        <div class="card">
         <mat-card>
           <mat-card-title>Personal Details</mat-card-title>
           <div class="space"></div>
@@ -113,10 +112,16 @@
             </mat-form-field>
           </div>
           <div class="two-items">
-            <div formGroupName="address">
+            <div formGroupName="address" class="form-width2">
               <mat-form-field class="form-width2">
                 <mat-label>Address</mat-label>
                 <input matInput formControlName="address" />
+              </mat-form-field>
+            </div>
+            <div formGroupName="address" class="form-width2">
+              <mat-form-field class="form-width2">
+                <mat-label>Village/Town/City</mat-label>
+                <input matInput formControlName="address2" />
               </mat-form-field>
             </div>
             <mat-form-field class="form-width2">
@@ -124,19 +129,22 @@
               <mat-select formControlName="district" required>
                 <mat-option
                   *ngFor="let district of districtChoices"
-                  [value]="district.value"
-                >
+                  [value]="district.value">
                   {{ district.label }}
                 </mat-option>
               </mat-select>
               <mat-error
                 *ngIf="
-                  personalDetailsForm.get('district')?.hasError('required')
-                "
-              >
+                  personalDetailsForm.get('district')?.hasError('required')">
                 District is required
               </mat-error>
             </mat-form-field>
+            <div formGroupName="address" class="form-width2">
+              <mat-form-field class="form-width2">
+                <mat-label>PIN-Code</mat-label>
+                <input matInput formControlName="pin" />
+              </mat-form-field>
+            </div>
           </div>
           <div class="two-items">
             <mat-form-field class="form-width2">
@@ -161,6 +169,8 @@
                 Must be in YYYY-MM-DD format
               </mat-error>
             </mat-form-field>
+
+
             <mat-form-field class="form-width2">
               <mat-label>Alive/Expired</mat-label>
               <mat-select
@@ -168,8 +178,7 @@
                 (selectionChange)="
                   showDateWhenExpired =
                     personalDetailsForm.get('aliveStatus')?.value === 'Expired'
-                "
-              >
+                ">
                 <mat-option value="Alive">Alive</mat-option>
                 <mat-option value="Expired">Expired</mat-option>
               </mat-select>
@@ -181,6 +190,9 @@
                 Status is required
               </mat-error>
             </mat-form-field>
+
+
+
           </div>
           <mat-form-field *ngIf="showDateWhenExpired">
             <mat-label>Date When Expired</mat-label>
@@ -204,114 +216,131 @@
               Must be in YYYY-MM-DD format
             </mat-error>
           </mat-form-field>
+
+
+
+
         </mat-card>
+      </div>
         <div class="space"></div>
         <div>
           <button mat-button matStepperNext class="blue-button">Next</button>
         </div>
       </form>
+    </div>
     </mat-step>
 
     <!-- Service Details Form Step -->
     <mat-step [stepControl]="serviceDetailsForm">
-      <form [formGroup]="serviceDetailsForm" class="card-container">
-        <ng-template matStepLabel>Service Details</ng-template>
-        <mat-card>
-          <mat-card-title>Service Details</mat-card-title>
-          <div class="space"></div>
-          <div class="two-items">
-            <mat-form-field class="form-width2">
-              <mat-label>Commission</mat-label>
-              <mat-select
-                formControlName="commission"
-                (selectionChange)="
-                  updateRanks(serviceDetailsForm.get('corps')?.value)
-                "
-                required
-              >
-                <mat-option
-                  *ngFor="let commission of commissionOptions"
-                  [value]="commission.value"
+      <div class="form-height">
+        <form [formGroup]="serviceDetailsForm" class="card-container">
+          <ng-template matStepLabel>Service Details</ng-template>
+          <div class="card">
+          <mat-card>
+            <mat-card-title>Service Details</mat-card-title>
+            <div class="space"></div>
+            <div class="three-items">
+              <mat-form-field class="form-width1">
+                <mat-label>Rank</mat-label>
+                <mat-select
+                  formControlName="commission"
+                  (selectionChange)="
+                    updateRanks(serviceDetailsForm.get('corps')?.value)
+                  "
+                  required
                 >
-                  {{ commission.label }}
-                </mat-option>
-              </mat-select>
-              <mat-error
-                *ngIf="
-                  serviceDetailsForm.get('commission')?.invalid &&
-                  serviceDetailsForm.get('commission')?.touched
-                "
-              >
-                Commission is required
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field class="form-width2">
-              <mat-label>Corps</mat-label>
-              <mat-select formControlName="corps" required>
-                <mat-option
-                  *ngFor="let corps of corpsOptions"
-                  [value]="corps.value"
+                  <mat-option
+                    *ngFor="let commission of commissionOptions"
+                    [value]="commission.value"
+                  >
+                    {{ commission.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="
+                    serviceDetailsForm.get('commission')?.invalid &&
+                    serviceDetailsForm.get('commission')?.touched
+                  "
                 >
-                  {{ corps.label }}
-                </mat-option>
-              </mat-select>
-              <mat-error
-                *ngIf="
-                  serviceDetailsForm.get('corps')?.invalid &&
-                  serviceDetailsForm.get('corps')?.touched
-                "
-              >
-                Corps is required
+                  Commission is required
+                </mat-error>
+              </mat-form-field>
+
+
+              <mat-form-field class="form-width1">
+                <mat-label>Corps</mat-label>
+                <mat-select formControlName="corps" (selectionChange)="showUnit = serviceDetailsForm.get('corps')?.value === 1" required>
+                  <mat-option *ngFor="let corps of corpsOptions" [value]="corps.value">
+                    {{ corps.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="serviceDetailsForm.get('corps')?.invalid && serviceDetailsForm.get('corps')?.touched">
+                  Corps is required
+                </mat-error>
+              </mat-form-field>
+            
+
+            <mat-form-field *ngIf="showUnit" class="form-width1">
+              <mat-label>Unit/Paltan</mat-label>
+              <input matInput formControlName="unit" placeholder="Enter Unit/Paltan">
+              <mat-error *ngIf="serviceDetailsForm.get('unit')?.hasError('required')">
+                Unit/Paltan is required
               </mat-error>
             </mat-form-field>
           </div>
-          <div class="two-items">
-            <mat-form-field class="form-width2">
-              <input
-                matInput
-                formControlName="dateOfEnrollment"
-                placeholder="Date of Enrollment YYYY-MM-DD"
-              />
-              <mat-error
-                *ngIf="
-                  serviceDetailsForm.get('dateOfEnrollment')?.invalid &&
-                  serviceDetailsForm.get('dateOfEnrollment')?.touched
-                "
-              >
-                Date of Enrollment must be in YYYY-MM-DD format
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field class="form-width2">
-              <input
-                matInput
-                formControlName="dateOfRetirement"
-                placeholder="Date of Retirement YYYY-MM-DD"
-              />
-              <mat-error
-                *ngIf="
-                  serviceDetailsForm.get('dateOfRetirement')?.invalid &&
-                  serviceDetailsForm.get('dateOfRetirement')?.touched
-                "
-              >
-                Date of Retirement must be in YYYY-MM-DD format
-              </mat-error>
-            </mat-form-field>
-          </div>
-        </mat-card>
-        <div class="space"></div>
-        <div>
-          <button mat-button matStepperPrevious class="blue-button">
-            Back
-          </button>
-          <button mat-button matStepperNext class="blue-button">Next</button>
+
+
+            <div class="two-items">
+              <mat-form-field class="form-width2">
+                <input
+                  matInput
+                  formControlName="dateOfEnrollment"
+                  placeholder="Date of Enrollment YYYY-MM-DD"
+                />
+                <mat-error
+                  *ngIf="
+                    serviceDetailsForm.get('dateOfEnrollment')?.invalid &&
+                    serviceDetailsForm.get('dateOfEnrollment')?.touched
+                  "
+                >
+                  Date of Enrollment must be in YYYY-MM-DD format
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field class="form-width2">
+                <input
+                  matInput
+                  formControlName="dateOfRetirement"
+                  placeholder="Date of Retirement YYYY-MM-DD"
+                />
+                <mat-error
+                  *ngIf="
+                    serviceDetailsForm.get('dateOfRetirement')?.invalid &&
+                    serviceDetailsForm.get('dateOfRetirement')?.touched
+                  "
+                >
+                  Date of Retirement must be in YYYY-MM-DD format
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </mat-card>
         </div>
-      </form>
+          <div class="space"></div>
+          <div>
+            <button mat-button matStepperPrevious class="blue-button">
+              Back
+            </button>
+            <button mat-button matStepperNext class="blue-button">Next</button>
+          </div>
+        </form>
+      </div>
     </mat-step>
 
     <!-- Bank Details Form Step -->
     <mat-step [stepControl]="bankDetailsForm">
+      <div class="form-height">
       <form [formGroup]="bankDetailsForm" class="card-container">
         <ng-template matStepLabel>Bank Details</ng-template>
+        <div class="card">
         <mat-card>
           <mat-card-title>Bank Details</mat-card-title>
           <div class="space"></div>
@@ -331,9 +360,14 @@
               </mat-error>
             </mat-form-field>
             <mat-form-field class="form-width2">
-              <mat-label>Bank Name</mat-label>
-              <input matInput formControlName="bankName" />
+              <mat-label>Pension Account Type</mat-label>
+              <mat-select formControlName="accountType" required>
+                <mat-option *ngFor="let type of accountTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
+            
           </div>
           <div class="two-items">
             <mat-form-field class="form-width2">
@@ -346,17 +380,14 @@
               </mat-error>
             </mat-form-field>
             <mat-form-field class="form-width2">
-              <mat-label>Account Type</mat-label>
-              <mat-select formControlName="accountType" required>
-                <mat-option *ngFor="let type of accountTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
-              </mat-select>
+              <mat-label>Bank Name with IFSC</mat-label>
+              <input matInput formControlName="bankName" />
             </mat-form-field>
+           
           </div>
           <div class="two-items">
             <mat-form-field class="form-width2">
-              <mat-label>Account Number</mat-label>
+              <mat-label>Pension Account Number</mat-label>
               <input matInput formControlName="accountNumber" required />
               <mat-error
                 *ngIf="
@@ -377,6 +408,7 @@
             </mat-form-field>
           </div>
         </mat-card>
+        </div>
         <div class="space"></div>
         <div>
           <button mat-button matStepperPrevious class="blue-button">
@@ -385,6 +417,7 @@
           <button mat-button matStepperNext class="blue-button">Next</button>
         </div>
       </form>
+      </div>
     </mat-step>
 
     <!--Family Details Form-->
@@ -495,7 +528,8 @@
               <button
                 mat-button
                 matStepperNext
-                class="blue-button">
+                class="blue-button"
+                >
                 Next
               </button>
             </div>
@@ -505,48 +539,100 @@
 
     <!--Additional Details Form-->
     <mat-step [stepControl]="additionalDetailsForm">
+      <div class="form-height">
       <form [formGroup]="additionalDetailsForm" class="card-container">
         <ng-template matStepLabel>Additional Details</ng-template>
+        <div class="card">
         <mat-card>
           <mat-card-title>Additional Details</mat-card-title>
+          <div class="space"></div>
           <form [formGroup]="additionalDetailsForm">
-            <mat-form-field>
+            <div class="three-items">
+            <mat-form-field class="form-width1">
               <mat-label>Canteen Smart Card</mat-label>
               <mat-select formControlName="canteenSmartCard" required>
                 <mat-option value="Yes">Yes</mat-option>
                 <mat-option value="No">No</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field>
+
+            <mat-form-field class="form-width1">
               <mat-label>ECHS</mat-label>
               <mat-select formControlName="echs" required>
                 <mat-option value="Yes">Yes</mat-option>
                 <mat-option value="No">No</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field>
+
+            <mat-form-field class="form-width1">
               <mat-label>COI</mat-label>
               <mat-select
                 formControlName="coi"
                 (selectionChange)="
                   showResCert = additionalDetailsForm.get('coi')?.value === 'No'
-                "
-              >
-                <mat-option value="Yes">Yes</mat-option>
-                <mat-option value="No">No</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field *ngIf="showResCert">
-              <mat-label>Resident Certificate</mat-label>
-              <mat-select formControlName="residentCertificate" required>
+                ">
                 <mat-option value="Yes">Yes</mat-option>
                 <mat-option value="No">No</mat-option>
               </mat-select>
             </mat-form-field>
 
+            <mat-form-field *ngIf="showResCert" class="form-width1">
+              <mat-label>Resident Certificate</mat-label>
+              <mat-select formControlName="residentCertificate" required>
+                <mat-option value="Yes">Yes</mat-option>
+                <mat-option value="No">No</mat-option>
+              </mat-select>
+            </mat-form-field>            
+          </div>
+
+          <div class="three-items">
+            <mat-form-field class="form-width1">
+              <mat-label>ESM Numbet</mat-label>
+              <input matInput formControlName="esm" placeholder="ESM Number">
+            </mat-form-field>
+
+          <mat-form-field class="form-width1">
+            <mat-label>ESM Issue Date</mat-label>
+            <input matInput formControlName="esmdate" placeholder="ESM Issue Date">
+          </mat-form-field>
+
+          <mat-form-field class="form-width1">
+            <mat-label>ESM Issue Place</mat-label>
+            <mat-select formControlName="esmplace">
+                <mat-option *ngFor="let option of placeofissue" [value]="option.value">
+                    {{ option.label }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        </div>
+
+            <div class="two-items">
+              <mat-form-field class="form-width2">
+                <mat-label>Highest Education</mat-label>
+                <mat-select
+                    formControlName="education"
+                    (selectionChange)="onEducationChange()">
+                    <mat-option *ngFor="let option of highestQualifications" [value]="option.value">
+                        {{ option.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field *ngIf="showEducation" class="form-width2">
+              <mat-label>Education Details</mat-label>
+              <input matInput formControlName="educationDetails" placeholder="Enter Education Details">
+              <mat-error *ngIf="additionalDetailsForm.get('educationDetails')?.hasError('required')">
+                Education details are required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+
+
             <div>
               <h3>Certificates</h3>
-            </div>
+            </div>            
             <!-- Service Certifications -->
             <div class="row">
               <form [formGroup]="certificationForm" enctype="multipart/form-data">
@@ -665,6 +751,9 @@
             <div class="space"></div>
             <button mat-button (click)="addAwards()">Add Award</button>
             
+            
+
+            
             <!-- Remarks -->
             <mat-form-field>
               <mat-label>Remarks</mat-label>
@@ -685,7 +774,9 @@
             </button>
           </div>
         </mat-card>
+        </div>
       </form>
+      </div>
     </mat-step>
 
     <!-- Review Step -->
@@ -809,7 +900,7 @@
                 <td class="field-name">{{ detail.field }}:</td>
                 <td class="field-value">
                   <ng-container *ngIf="isImage(detail.value); else textTemplate">
-                    <img [src]="detail.value" alt="{{ detail.field }}" style="width: 200;"/>
+                    <img [src]="detail.value" alt="{{ detail.field }}" style="width: 200px;" />
                   </ng-container>
                   <ng-template #textTemplate>{{ detail.value }}</ng-template>
                 </td>
@@ -826,12 +917,7 @@
       <button mat-button class="blue-button" (click)="onSubmit()">Submit</button>
     </div>
     </mat-step>
-    
   </mat-stepper>
 </div>
 
-<div class="footer">
-  <footer>
-    <app-footer></app-footer>
-  </footer>
-</div>
+<app-footer></app-footer>

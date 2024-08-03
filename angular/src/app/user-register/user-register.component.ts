@@ -1,4 +1,4 @@
-import { Component, SecurityContext } from "@angular/core";
+import { Component, SecurityContext ,HostListener} from "@angular/core";
 import {
   FormArray,
   FormBuilder,
@@ -86,6 +86,8 @@ export class UserRegisterComponent {
   currentCard = 1;
   totalCards = 5;
   showDateWhenExpired = false;
+  showUnit = false;
+  showEducation = false;
   showResCert = false;
   selectedFiles: { file: File, awardIndex: number }[] = [];
   imagePreviews: { image: string, date: string, remarks: string }[] = [];
@@ -130,10 +132,26 @@ export class UserRegisterComponent {
     { value: 8, label: "Sister" },
   ];
 
+  highestQualifications: { value: number; label: string }[] = [
+    { value: 1, label: "below Class 10" },
+    { value: 2, label: "Class X" },
+    { value: 3, label: "Class XII" },
+    { value: 4, label: "Under Graduate" },
+    { value: 5, label: "Post Graduate" }
+];
+
+placeofissue: { value: number; label: string }[] = [
+  { value: 1, label: "ZSB(NE)" },
+  { value: 2, label: "ZSB(W)" },
+  { value: 3, label: "ZSB(S)" }
+];
+
   dataSource!: MatTableDataSource<any>;
   columnsToDisplay = ["field", "value"];
   stepper: any;
   cert: any;
+
+  isSmallScreen: boolean = window.innerWidth < 500;
 
   constructor(
     private fb: FormBuilder,
@@ -169,12 +187,15 @@ export class UserRegisterComponent {
       district: ["",],
       address: this.fb.group({
         address: [""],
+        address2:[""],
+        pin:[""],
       }),
     });
 
     this.serviceDetailsForm = this.fb.group({
       commission: ["",],
       corps: ["",],
+      unit: ["",],
       dateOfEnrollment: [
         "",
         [],
@@ -226,11 +247,16 @@ export class UserRegisterComponent {
   
 
     this.additionalDetailsForm = this.fb.group({
-      canteenSmartCard: ["",],
-      echs: ["",],
-      coi: ["",],
+      canteenSmartCard: ["", Validators.required],
+      echs: ["", Validators.required],
+      esm: ["", Validators.required],
+      esmdate:["", Validators.required],
+      esmplace:["", Validators.required],
+      coi: ["", Validators.required],
       residentCertificate: [""],
-      date: ["",],
+      education: [""],
+      educationDetails: [""],
+      date: ["", Validators.pattern("^\\d{4}-\\d{2}-\\d{2}$")],
       serviceCertifications: this.certificationForm,  
       civilCertifications: this.civilcertificationForm,  
       awards: this.awarddetails,
@@ -239,9 +265,15 @@ export class UserRegisterComponent {
 
     this.onAliveStatusChange(), this.COIstatusChange();
   }
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isSmallScreen = window.innerWidth < 500;
+  }
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource(this.getSummaryData());
+    this.onCorpsChange();
+    this.onEducationChange();
   }
  
   getSummaryData() {
@@ -280,6 +312,10 @@ export class UserRegisterComponent {
             : this.personalDetailsForm.get("district")?.value,
       },
       {
+        field:"PinCode",
+        value:this.personalDetailsForm.get("address.pin")?.value,
+      },
+      {
         field: "Date of Birth",
         value: this.personalDetailsForm.get("dateOfBirth")?.value,
       },
@@ -316,6 +352,13 @@ export class UserRegisterComponent {
             ? "Indian Air Force"
             : this.serviceDetailsForm.get("corps")?.value,
       },
+       {
+        field: "Unit",
+  value: this.serviceDetailsForm.get("corps")?.value === 1
+    ? this.serviceDetailsForm.get("unit")?.value
+    : "---"
+      },
+     
       {
         field: "Date of Enrollment",
         value: this.serviceDetailsForm.get("dateOfEnrollment")?.value,
@@ -366,33 +409,71 @@ export class UserRegisterComponent {
         value: this.additionalDetailsForm.get("coi")?.value === "No"
           ? (this.additionalDetailsForm.get("residentCertificate")?.value ? this.additionalDetailsForm.get("residentCertificate")?.value : "---") : "---"
       },
+      {
+        feild:"ESM Number",
+        value:this.additionalDetailsForm.get("esm")?.value
+      },
+      {
+        feild:"ESM Date",
+        value:this.additionalDetailsForm.get("esmdate")?.value
+      },
+      {
+        field: "ESM Place Of Issue",
+        value: this.additionalDetailsForm.get("esmplace")?.value === 1 
+              ? "ZSB(NE)"
+               :this.additionalDetailsForm.get("esmplace")?.value === 2 
+               ? "ZSB(W)" 
+               :this.additionalDetailsForm.get("esmplace")?.value === 3 
+               ? "ZSB(S)" 
+               :this.additionalDetailsForm.get("esmplace")?.value
+      },
+      {
+        field: "Highest Qualification",
+        value: this.additionalDetailsForm.get("education")?.value === 1 ? "below Class 10"
+               :this.additionalDetailsForm.get("education")?.value === 2 ? "Class X"
+               :this.additionalDetailsForm.get("education")?.value === 3 ? "Class XII"
+               :this.additionalDetailsForm.get("education")?.value === 4 ? "Under Graduate"
+               :this.additionalDetailsForm.get("education")?.value === 5 ? "Post Graduate"
+               :this.additionalDetailsForm.get("education")?.value
+               
+      },
+      {
+        feild:"Education Details",
+        value: this.additionalDetailsForm.get("educationDetails")?.value
+
+      },
+
       
       
     ];
   }
   getPersonalDetails() {
     const personalDetails = this.getSummaryData().filter(item => {
-      return ['Name', 'Unique ID', 'Contact Number', 'Aadhar Number', 'Email', 'Address', 'District', 'Date of Birth', 'Alive/Expired', 'Date When Expired'].includes(item.field);
+      const field = item.field || item.feild; 
+      return ['Name', 'Unique ID', 'Contact Number', 'Aadhar Number', 'Email', 'Address', 'District','PinCode', 'Date of Birth', 'Alive/Expired', 'Date When Expired'].includes(field ?? '')
     });
     return personalDetails;
   }
 
-  getServiceDetails(){
+  getServiceDetails() {
     const serviceDetails = this.getSummaryData().filter(item => {
-      return ['Commission', 'Corps', 'Date of Enrollment', 'Date of Retirement'].includes(item.field);
+      const field = item.field || item.feild; 
+      return ['Commission', 'Corps', 'Unit', 'Date of Enrollment', 'Date of Retirement'].includes(field ?? '');
     });
     return serviceDetails;
   }
 
   getBankDetails(){
     const bankDetails = this.getSummaryData().filter(item => {
-      return ['PAN Number', 'Bank Name', 'IFSC Code', 'Account Type', 'Account Number', 'PPO Number'].includes(item.field);
+      const field = item.field || item.feild; 
+      return ['PAN Number', 'Bank Name', 'IFSC Code', 'Account Type', 'Account Number', 'PPO Number'].includes(field ?? '');
     });
     return bankDetails;
   }
   getFamilyDetails(){
     const familyDetails = this.getSummaryData().filter(item => {
-      return ['Next of Kin'].includes(item.field);
+      const field = item.field || item.feild; 
+      return ['Next of Kin'].includes(field ?? '');
     });
     const dependentsSummary =
       this.familyDetailsForm
@@ -420,6 +501,11 @@ export class UserRegisterComponent {
       additionalDetails.push({ field: 'Canteen Smart Card', value: additionalData.canteenSmartCard });
       additionalDetails.push({ field: 'ECHS', value: additionalData.echs });
       additionalDetails.push({ field: 'COI', value: additionalData.coi });
+      additionalDetails.push({field:'ESM Number',value:additionalData.esm});
+      additionalDetails.push({field:'ESM Date',value:additionalData.esmdate});
+      additionalDetails.push({field:'ESM Place Of Issue',value:additionalData.esmplace});
+      additionalDetails.push({field:'Highest Qualification',value:additionalData.education})
+      additionalDetails.push({field:'Education Details',value:additionalData.educationDetails});
       
       if (this.showResCert) {
         additionalDetails.push({ field: 'Resident Certificate', value: additionalData.residentCertificate });
@@ -461,7 +547,7 @@ fileToBase64 = (file: File): Promise<string> => {
       this.personalDetailsForm.valid &&
        this.serviceDetailsForm.valid &&
        this.bankDetailsForm.valid &&
-        this.familyDetailsForm.valid && 
+       this.familyDetailsForm.valid && 
        this.additionalDetailsForm.valid &&
        this.civilcertificationForm.valid &&
        this.certificationForm.valid &&
@@ -502,6 +588,7 @@ console.log(servicedetails, 'Service Details');
         last_name: this.personalDetailsForm.value.lastName,
         date_of_birth: this.personalDetailsForm.value.dateOfBirth,
         district: this.personalDetailsForm.value.district,
+        pinCode:this.personalDetailsForm.value.address.pin,
         address: this.personalDetailsForm.value.address.address,
         phone_number: this.personalDetailsForm.value.contactNumber,
         email: this.personalDetailsForm.value.email,
@@ -512,6 +599,7 @@ console.log(servicedetails, 'Service Details');
           {
             corps: this.serviceDetailsForm.value.corps,
             commission: this.serviceDetailsForm.value.commission,
+            unit: this.serviceDetailsForm.value.unit || null,
             description: "Description of service", // Replace with actual description if available
             start_date: this.serviceDetailsForm.value.dateOfEnrollment,
             end_date: this.serviceDetailsForm.value.dateOfRetirement,
@@ -541,6 +629,11 @@ console.log(servicedetails, 'Service Details');
             echs: this.additionalDetailsForm.get("echs")?.value,
             coi: this.additionalDetailsForm.get("coi")?.value,
             resident_certificate: this.additionalDetailsForm.get("residentCertificate")?.value,
+            esm: this.additionalDetailsForm.get("esm")?.value,
+            esamissuedate: this.additionalDetailsForm.get("esmdate")?.value,
+            esmPlaceOfIssue: this.additionalDetailsForm.get("esmplace")?.value,
+            highestqualification: this.additionalDetailsForm.get("education")?.value,
+            eductaiondetails:this.additionalDetailsForm.get("educationDetails")?.value,
           },
         ],
 
@@ -632,7 +725,36 @@ console.log(servicedetails, 'Service Details');
           ?.updateValueAndValidity();
       });
   }
-
+  onCorpsChange() {
+    this.serviceDetailsForm.get('corps')?.valueChanges.subscribe((value) => {
+      if (value === 1) {  // 1 for Indian Army
+        this.showUnit = true;
+        this.serviceDetailsForm
+          .get('unit')
+          ?.setValidators([Validators.required]);
+      } else {
+        this.showUnit = false;
+        this.serviceDetailsForm.get('unit')?.clearValidators();
+        this.serviceDetailsForm.get('unit')?.reset();
+      }
+      this.serviceDetailsForm.get('unit')?.updateValueAndValidity();
+    });
+  }
+  onEducationChange() {
+    this.additionalDetailsForm.get('education')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.showEducation = true;
+        this.additionalDetailsForm
+          .get('educationDetails')
+          ?.setValidators([Validators.required]);
+      } else {
+        this.showEducation = false;
+        this.additionalDetailsForm.get('educationDetails')?.clearValidators();
+        this.additionalDetailsForm.get('educationDetails')?.reset();
+      }
+      this.additionalDetailsForm.get('educationDetails')?.updateValueAndValidity();
+    });
+  }
   COIstatusChange() {
     this.additionalDetailsForm.get("coi")?.valueChanges.subscribe((status) => {
       if (status === "No") {

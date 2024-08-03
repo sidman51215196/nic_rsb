@@ -1,5 +1,6 @@
 .full-screen{
-  height: 100vh; /* Use full viewport height */
+  height: 100%; /* Use full viewport height */
+  background-color: #B0C4DE;
 }
 
 .end-container {
@@ -14,7 +15,6 @@
   width: 80%; /* Set width to a percentage of the viewport */
   max-width: 400px; /* Set maximum width for responsiveness */
   margin: 0 auto;
-  margin-top: 100px;
 }
 .center-content {
   text-align: center;
@@ -37,11 +37,6 @@
   background-color: darkblue; /* Darker blue on hover */
 }
 
-
-.parent-cardcontainer{
-  margin-top: 100px;
-
-}
 .card-container {
   display: flex;
   justify-content: center;
@@ -51,30 +46,9 @@
   width: 100%;
 }
 
-
-
-@media (max-width: 800px) {
-  .card-container {
-    flex-direction: column; /* Stack items vertically */
-    height: auto; /* Let the height adjust based on content */
-    padding: 20px; /* Add some padding */
-    margin-top: auto;
-    /* margin-bottom: 100vh; */
-  }
-}
-@media (max-width: 600px) {
-  .card-container {
-    flex-direction: column; /* Stack items vertically */
-    height: 150vh; /* Let the height adjust based on content */
-    padding: 20px; /* Add some padding */
-    margin-top: auto;
-    /* margin-bottom: 100vh; */
-  }
-}
-@media (max-width: 800px) {
-  .full-screen{
-    margin-top: 200px;
-  }
+.card{
+  margin-top: 100px;
+  width: 100%;
 }
 
 .responsive-card {
@@ -84,13 +58,14 @@
 }
 
 mat-card {
-  width: 100%; /* Take full width */
-  max-width: 800px; /* Limit max width if needed */
+  width: 100%; 
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.632); /* Add a subtle box-shadow for elevation */
 }
 
 form {
@@ -141,15 +116,14 @@ input.mat-input-element {
   display: flex;
   flex-direction: row;
   gap: 10px;
+  width:100%
 }
 
 .two-items{
   display: flex;
   flex-direction: row;
   gap: 10px;
-}
-
-.one-item{
+  width:100%
 
 }
 
@@ -166,8 +140,6 @@ input.mat-input-element {
   padding: 10px;
 }
 
-
-
 ::ng-deep .blue-button {
   margin: 5px;
   background-color: rgb(0, 138, 184) !important;
@@ -177,74 +149,33 @@ input.mat-input-element {
   background-color: darkblue !important; /* Optional: A darker blue for the hover state */
 }
 
+.btn{
+  width: 100%;
+  text-align: center;
+  align-items: center;
+}
+
+.btn-size{
+  width: 300px;
+  align-items: center;
+}
+
 .form-width1{
-  width: 240px;
+  /* width: 480px; */
+  width: 100%;
 }
 
 .form-width2{
-  width: 360px;
+  /* width: 720px; */
+  width: 100%;
 }
 
 .form-width3{
   width: 740px;
 }
-/* .name-form-field {
-  width: 500px;
-} */
-/* .responsive-form-field {
-  width: 500px;
-}
-@media (max-width: 768px) {
-  .responsive-form-field {
-      width: 100%; 
-  }
-} */
 
-@media screen and (max-width: 800px) {
-  .three-items {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .two-items{
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .form-width1 {
-    width: 550px;
-  }
-  .form-width2 {
-    width: 250px; /* Ensure form fields take the full width on small screens */
-  }
-
-  .form-width3{
-    width: 250px;
-  }
-}
-
-@media screen and (max-width: 600px) {
-
-  .three-items {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .two-items{
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .form-width1 {
-    width: 250px;
-  }
-  .form-width2 {
-    width: 250px; /* Ensure form fields take the full width on small screens */
-  }
-
-  .form-width3{
-    width: 250px;
-  }
+.form-width4{
+  width: 450px;
 }
 
 .mat-elevation-z8 {
@@ -321,11 +252,10 @@ font-size: 16px; /* Adjust as needed */
 
 table{
   width: 100%;
- }
+  height: 100%;
+}
 
-
-
- .mat-column-field{
+.mat-column-field{
   word-wrap: break-word !important;
   white-space: unset !important;
   flex: 0 0 28% !important;
@@ -339,9 +269,9 @@ table{
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
- }
+}
 
- .mat-column-value{
+.mat-column-value{
   word-wrap: break-word !important;
   white-space: unset !important;
   flex: 0 0 28% !important;
@@ -355,23 +285,119 @@ table{
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
- }
+}
 
 .hidden {
   display: none;
 }
 
-.done-footer{
-  min-width: 100vh;
-  align-items: center;
+.final-stepper{
+  height: 100%;
+}
+
+.footer{
+  height: 100%;
 }
 
 .red{
   color: #f44336;
 }
 
+.red-bg{
+  background-color: red;
+  color: white;
+  margin-right: 5px;
+}
+
+.delete{
+  font-size: 30px;
+}
+
 .center-buttons {
   text-align: center; /* Center align content horizontally */
   margin-bottom: 20px; /* Adjust margin as needed */
   margin-bottom: 70px;
+}
+
+.form-height{
+  min-height: 75vh;
+  height: 100%;
+  width: 100%;
+}
+
+.review-card {
+  width: 100%; /* Adjust width as needed */
+}
+
+.review-title{
+  width: 100%;
+  border-radius: 8px;
+}
+
+.table{
+  width: 100%;
+  border: none;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: none;
+}
+
+.details-table th {
+  background-color: lightblue; /* Light blue background for table headings */
+  color: black; /* Text color for table headings */
+  font-weight: bold;
+  padding: 10px; /* Adjust padding as needed */
+  text-align: center;
+  border: none;
+}
+
+.details-table .field-name {
+  font-weight: bold;
+  width: 50%;
+  min-width: 120px; /* Adjust minimum width as needed */
+  padding: 8px; /* Adjust padding as needed */
+  text-align: center;
+}
+
+.details-table .field-value {
+  padding: 8px; /* Adjust padding as needed */
+  text-align: center;
+}
+
+.details-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light grey background for even rows */
+}
+
+.details-table tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White background for odd rows */
+}
+
+@media screen and (max-width: 800px) {
+  .card{
+    margin-top: 0px;
+  }
+
+  .card-container {
+    flex-direction: column; /* Stack items vertically */
+    height: 100%; /* Let the height adjust based on content */
+    padding: 5px; /* Add some padding */
+    margin-top: auto;
+  }
+
+  .three-items{
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .two-items{
+    flex-direction: column;
+    align-items: center;
+  }
+  .full-screen{
+    background-color: #fbfcfc;
+  }
 }

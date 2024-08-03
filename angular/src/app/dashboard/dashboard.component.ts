@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {FormsModule,ReactiveFormsModule} from '@angular/forms';
 import { HttpClient,HttpHeaders } from '@angular/common/http';
-
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -29,6 +29,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ChangePasswordDialogueComponent } from '../change-password-dialogue/change-password-dialogue.component';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+
 
 export interface SainikPersonalDetails {
   Id_ic: string;
@@ -56,6 +57,26 @@ export interface SainikBankDetails {
   ppo_number: string;
 }
 
+export interface SainikFamilyDetails {
+  first_name: string;
+  last_name: string;
+  relation: string;
+}
+
+export interface SainikAdditionalDetails {
+  canteenSmartCard: boolean;
+  coi: boolean;
+  residentCertificate: boolean;
+  echs: boolean;
+  esm:string;
+  esamissuedate:string;
+  esmPlaceOfIssue: number;
+  highestqualification:number;
+  eductaiondetails:string;
+  
+}
+
+
 export interface SainikDetails {
   Id_ic: string;
   first_name: string;
@@ -64,6 +85,7 @@ export interface SainikDetails {
   date_of_birth: string;
   district: number;
   address: string;
+  pinCode:String
   phone_number: string;
   email: string;
   aadhar_number: string;
@@ -71,7 +93,10 @@ export interface SainikDetails {
   expiry_date: string | null;
   services: SainikServiceDetails[];
   bankdetails: SainikBankDetails[];
+  familydetails: SainikFamilyDetails[];
+  additionaldetails: SainikAdditionalDetails[];  
 }
+
 
 
 @Component({
@@ -116,6 +141,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   displayedColumnsDetails: string[] = ['field', 'value'];
   dataSource = new MatTableDataSource<SainikPersonalDetails>();
   totalRecords = 0;
+  isHeaderVisible: boolean = false;
+  dragging=false;
+  profileImageForm!: FormGroup;
+  imagePreview: string | ArrayBuffer | null=null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -134,11 +163,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   personalDetailsForm!: FormGroup;
   serviceDetailsForm!: FormGroup;
   bankDetailsForm!: FormGroup;
+  familyDetailsForm!: FormGroup;
+  additionalDetailsForm!: FormGroup;
+
+  editMode:boolean=false;
+  displaydetailsEdit:boolean=false;
+
 
   selectedSainikDetails: SainikDetails | null = null;
   personalDetails: { field: string, value: any }[] = [];
   serviceDetails: { field: string, value: any }[] = [];
   bankDetails: { field: string, value: any }[] = [];
+  familyDetails: { field: string, value: any }[] = [];
+  additionalDetails: { field: string, value: any }[] = [];
   roleMapping: { [key: number]: string } = {
     1: 'Super Admin',
     2: 'Admin'
@@ -171,6 +208,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.personalDetailsForm = this.formBuilder.group({});
     this.serviceDetailsForm = this.formBuilder.group({});
     this.bankDetailsForm = this.formBuilder.group({});
+    this.familyDetailsForm = this.formBuilder.group({});
+    this.additionalDetailsForm = this.formBuilder.group({});
   }
 
   ngAfterViewInit() {
@@ -188,7 +227,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       district: this.userdistrict
     };
   }
-
+  openEditDetails(element: SainikDetails){
+    console.log('Data being sent to update-profile:', element);
+    //this.router.navigate(['/update-profile'], { state: { data: element } });
+    console.log('edit is clicked at dashboard');
+  }
   getRoleName(role: number | undefined = 0): string {
     return this.roleMapping[role] || 'Unknown';
   }
@@ -267,6 +310,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { field: 'Date of Birth', value: details.date_of_birth },
             { field: 'District', value: this.getDistrictName2(details.district) },
             { field: 'Address', value: details.address },
+            { field:'PinCode',value: details.pinCode},
             { field: 'Phone Number', value: details.phone_number },
             { field: 'Email', value: details.email },
             { field: 'Aadhar Number', value: details.aadhar_number },
@@ -290,6 +334,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             { field: 'Account Type', value: bank.account_type },
             { field: 'PPO Number', value: bank.ppo_number }
           ]).flat();
+          this.familyDetails = details.familydetails.map(family => [
+            { field: 'First Name', value: family.first_name },
+            { field: 'Last Name', value: family.last_name },
+            { field: 'Relation', value: family.relation}
+          ]).flat();
+          this.additionalDetails = details.additionaldetails.map(additional => [
+            { field: 'Canteen Smart Card', value: additional.canteenSmartCard ? 'Yes' : 'No' },
+            { field: 'COI', value: additional.coi ? 'Yes' : 'No' },
+            { field: 'Resident Certificate', value: additional.residentCertificate ? 'Yes' : 'No' },
+            { field: 'ECHS', value: additional.echs ? 'Yes' : 'No' },
+            { field: 'ESM Number', value: additional.esm},
+            { field: 'ESM IssueDate', value: additional.esamissuedate},
+            { field: 'ESM PlaceOfIssue', value: this.getEsmIssuePlace(additional.esmPlaceOfIssue)},
+            { field: 'Highest Qualification', value: this.getHighestQualification(additional.highestqualification)},
+            
+          ]).flat();
         }
       );
   }
@@ -309,6 +369,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     };
     return corpsNames[corps] || 'Unknown Corps';
   }
+  getEsmIssuePlace(issuePlace: number): string {
+    const issuePlaces: { [key: number]: string } = {
+      1: 'ZSB(NE)',
+      2: 'ZSB(W)',
+      3: 'ZSB(S)'
+    };
+    return issuePlaces[issuePlace] || 'Unknown Issue Place';
+  }
+  getRelationLabel(relationValue: number): string {
+    const relationOptions: { value: number; label: string }[] = [
+      { value: 1, label: "Father" },
+      { value: 2, label: "Mother" },
+      { value: 3, label: "Son" },
+      { value: 4, label: "Daughter" },
+      { value: 5, label: "Wife" },
+      { value: 6, label: "Husband" },
+      { value: 7, label: "Brother" },
+      { value: 8, label: "Sister" },
+    ];
+  
+    
+    const relation = relationOptions.find(option => option.value === relationValue);
+    
+    return relation ? relation.label : 'Unknown Relation';
+  }
+  getHighestQualification(qualification: number): string {
+    const qualifications: { [key: number]: string } = {
+      1: 'below Class 10',
+      2: 'Class X',
+      3: 'Class XII',
+      4: 'Under Graduate',
+      5: 'Post Graduate'
+    };
+    return qualifications[qualification] || 'Unknown Qualification';
+  }
+  
+  
   getCommissionName(commission: number): string{
     const commissionNames: { [key: number]: string } = {
       1: 'Commissioned Officer(CO)',
